@@ -3,8 +3,8 @@ import json
 import pandas as pd
 import copy
 
-AccessKey = ""
-# AccessKey = input("Enter Access Key : ")
+# AccessKey = ""
+AccessKey = input("Enter Access Key : ")
 
 def createJsonCsvThroughUraApI(url,name): 
     #Set up header parameter
