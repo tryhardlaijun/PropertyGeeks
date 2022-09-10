@@ -1,0 +1,101 @@
+town,flat_type,quarter,_id,median_rent
+ANG MO KIO,1-RM,2005-Q2,1,na                        
+ANG MO KIO,2-RM,2005-Q2,2,na                        
+ANG MO KIO,3-RM,2005-Q2,3,800
+ANG MO KIO,4-RM,2005-Q2,4,950
+ANG MO KIO,5-RM,2005-Q2,5,-                         
+ANG MO KIO,EXEC,2005-Q2,6,na                        
+BEDOK,1-RM,2005-Q2,7,na                             
+BEDOK,2-RM,2005-Q2,8,na                             
+BEDOK,3-RM,2005-Q2,9,800
+BEDOK,4-RM,2005-Q2,10,900
+BEDOK,5-RM,2005-Q2,11,1025
+BEDOK,EXEC,2005-Q2,12,-                              
+BISHAN,1-RM,2005-Q2,13,na                            
+BISHAN,2-RM,2005-Q2,14,na                            
+BISHAN,3-RM,2005-Q2,15,-                             
+BISHAN,4-RM,2005-Q2,16,1000
+BISHAN,5-RM,2005-Q2,17,1100
+BISHAN,EXEC,2005-Q2,18,-                             
+BUKIT BATOK,1-RM,2005-Q2,19,na                       
+BUKIT BATOK,2-RM,2005-Q2,20,na                       
+BUKIT BATOK,3-RM,2005-Q2,21,745
+BUKIT BATOK,4-RM,2005-Q2,22,925
+BUKIT BATOK,5-RM,2005-Q2,23,-                        
+BUKIT BATOK,EXEC,2005-Q2,24,-                        
+BUKIT MERAH,1-RM,2005-Q2,25,na                       
+BUKIT MERAH,2-RM,2005-Q2,26,-                        
+BUKIT MERAH,3-RM,2005-Q2,27,850
+BUKIT MERAH,4-RM,2005-Q2,28,-                        
+BUKIT MERAH,5-RM,2005-Q2,29,-                        
+BUKIT MERAH,EXEC,2005-Q2,30,na                       
+BUKIT PANJANG,1-RM,2005-Q2,31,na                     
+BUKIT PANJANG,2-RM,2005-Q2,32,na                     
+BUKIT PANJANG,3-RM,2005-Q2,33,-                      
+BUKIT PANJANG,4-RM,2005-Q2,34,-                      
+BUKIT PANJANG,5-RM,2005-Q2,35,-                      
+BUKIT PANJANG,EXEC,2005-Q2,36,-                      
+BUKIT TIMAH,1-RM,2005-Q2,37,na                       
+BUKIT TIMAH,2-RM,2005-Q2,38,na                       
+BUKIT TIMAH,3-RM,2005-Q2,39,-                        
+BUKIT TIMAH,4-RM,2005-Q2,40,-                        
+BUKIT TIMAH,5-RM,2005-Q2,41,-                        
+BUKIT TIMAH,EXEC,2005-Q2,42,-                        
+CENTRAL,1-RM,2005-Q2,43,na                           
+CENTRAL,2-RM,2005-Q2,44,-                            
+CENTRAL,3-RM,2005-Q2,45,-                            
+CENTRAL,4-RM,2005-Q2,46,-                            
+CENTRAL,5-RM,2005-Q2,47,na                           
+CENTRAL,EXEC,2005-Q2,48,na                           
+CHOA CHU KANG,1-RM,2005-Q2,49,na                     
+CHOA CHU KANG,2-RM,2005-Q2,50,na                     
+CHOA CHU KANG,3-RM,2005-Q2,51,-                      
+CHOA CHU KANG,4-RM,2005-Q2,52,900
+CHOA CHU KANG,5-RM,2005-Q2,53,950
+CHOA CHU KANG,EXEC,2005-Q2,54,-                      
+CLEMENTI,1-RM,2005-Q2,55,na                          
+CLEMENTI,2-RM,2005-Q2,56,na                          
+CLEMENTI,3-RM,2005-Q2,57,838
+CLEMENTI,4-RM,2005-Q2,58,1000
+CLEMENTI,5-RM,2005-Q2,59,-                           
+CLEMENTI,EXEC,2005-Q2,60,-                           
+GEYLANG,1-RM,2005-Q2,61,na                           
+GEYLANG,2-RM,2005-Q2,62,-                            
+GEYLANG,3-RM,2005-Q2,63,800
+GEYLANG,4-RM,2005-Q2,64,950
+GEYLANG,5-RM,2005-Q2,65,-                            
+GEYLANG,EXEC,2005-Q2,66,-                            
+HOUGANG,1-RM,2005-Q2,67,na                           
+HOUGANG,2-RM,2005-Q2,68,na                           
+HOUGANG,3-RM,2005-Q2,69,-                            
+HOUGANG,4-RM,2005-Q2,70,850
+HOUGANG,5-RM,2005-Q2,71,-                            
+HOUGANG,EXEC,2005-Q2,72,-                            
+JURONG EAST,1-RM,2005-Q2,73,na                       
+JURONG EAST,2-RM,2005-Q2,74,na                       
+JURONG EAST,3-RM,2005-Q2,75,775
+JURONG EAST,4-RM,2005-Q2,76,1000
+JURONG EAST,5-RM,2005-Q2,77,-                        
+JURONG EAST,EXEC,2005-Q2,78,-                        
+JURONG WEST,1-RM,2005-Q2,79,na                       
+JURONG WEST,2-RM,2005-Q2,80,na                       
+JURONG WEST,3-RM,2005-Q2,81,750
+JURONG WEST,4-RM,2005-Q2,82,950
+JURONG WEST,5-RM,2005-Q2,83,1000
+JURONG WEST,EXEC,2005-Q2,84,-                        
+KALLANG/WHAMPOA,1-RM,2005-Q2,85,na                   
+KALLANG/WHAMPOA,2-RM,2005-Q2,86,na                   
+KALLANG/WHAMPOA,3-RM,2005-Q2,87,800
+KALLANG/WHAMPOA,4-RM,2005-Q2,88,1000
+KALLANG/WHAMPOA,5-RM,2005-Q2,89,-                    
+KALLANG/WHAMPOA,EXEC,2005-Q2,90,-                    
+LIM CHU KANG,1-RM,2005-Q2,91,na                      
+LIM CHU KANG,2-RM,2005-Q2,92,na                      
+LIM CHU KANG,3-RM,2005-Q2,93,na                      
+LIM CHU KANG,4-RM,2005-Q2,94,na                      
+LIM CHU KANG,5-RM,2005-Q2,95,na                      
+LIM CHU KANG,EXEC,2005-Q2,96,na                      
+MARINE PARADE,1-RM,2005-Q2,97,na                     
+MARINE PARADE,2-RM,2005-Q2,98,na                     
+MARINE PARADE,3-RM,2005-Q2,99,820
+MARINE PARADE,4-RM,2005-Q2,100,-                      
