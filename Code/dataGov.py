@@ -12,7 +12,7 @@ dataGov = {
 
 
 def dataGovToJson(resourceID,name):
-    url = "https://data.gov.sg/api/action/datastore_search?resource_id={}";
+    url = "https://data.gov.sg/api/action/datastore_search?&limit=10000&resource_id={}";
     response = requests.get(url.format(resourceID))
     # print((response.json()['result']['records']))
     df = pd.DataFrame(response.json()['result']['records'])
@@ -25,6 +25,3 @@ dataGovToJson(dataGov["Resale Flat Prices"],"dataGovResaleFlatPrices")
 dataGovToJson(dataGov["HDB Property Information"],"dataGovHDBPropertyInformation")
 
 
-
-
-# convertPostalToAddress(520843)
