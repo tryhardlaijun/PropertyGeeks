@@ -1,4 +1,5 @@
 import email
+import json
 import pwd
 from tkinter.messagebox import NO
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
@@ -39,7 +40,7 @@ app.config['SECRET_KEY'] = '12345'
 
 
 
-@app.route('/',methods=["GET","POST"])
+@app.route('/',methods=["GET"])
 def main():
     if 'username' in session:
         username = session['username']
@@ -50,6 +51,7 @@ def main():
         print(passhash)
         resp.status_code = 401
         return resp
+
 
 @app.route('/loginAPI',methods=['POST',])
 def loginAPI():
@@ -88,6 +90,7 @@ def logoutAPI():
     return jsonify({'messsage':'Succesfully logged out'})
 
 
+
 @app.route('/registerAPI',methods=['POST',])
 def registerAPI():
     _json = request.json
@@ -102,14 +105,19 @@ def registerAPI():
         queryEmail = 'SELECT * FROM Login WHERE email=%s'
         cur.execute(queryEmail,(email,))
         rows = cur.fetchall()
-        if rows > 0:
-            resp = jsonify({'message':'Bad request - user exists'})
+        print(rows)
+        if len(rows) > 0:
+            resp = jsonify({'message':'Bad request - email has been used'})
             resp.status_code  = 400
             return resp
         else: #Meaning no duplicate
             if pwd == cfPwd:
                 # Proceed to database insertion
-                return jsonify({"message":"Login successfully"})
+                insertQuery = 'INSERT INTO Login (email,password) VALUES (%s, %s)'
+                passhash = generate_password_hash(pwd)
+                cur.execute(insertQuery,(email,passhash))
+                conn.commit()
+                return jsonify({"message":"Register successfully"})
             else:
                 resp = jsonify({'message':'Bad request - Password not correct'})
                 resp.status_code  = 400
@@ -118,10 +126,8 @@ def registerAPI():
         resp = jsonify({'message':'Bad request - Fields incomplete'})
         resp.status_code  = 400
         return resp
-    # check passwords correct
-        # insert into database
 
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=1)
