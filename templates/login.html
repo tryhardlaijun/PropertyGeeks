@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+   <body>
+      <h1>LOGIN</h1>
+      <form action="/login" , method="POST">
+        <label for="email">Email:</label>
+        <input type="text" name="email" id="email">
+        <p></p>
+        {{errorMsg}}
+        <p></p>
+        <label for="pwd">Password:</label>
+        <input type="password" name="pwd" id="pwd">
+        <input type="submit">
+        <br>
+        <p><a href="/register">Not a member?</a></p>
+    </form>
+   </body>
+</html>
