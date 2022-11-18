@@ -1,7 +1,3 @@
-import email
-import json
-import pwd
-from tkinter.messagebox import NO
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import mariadb
@@ -27,18 +23,6 @@ cur = conn.cursor()
 app = Flask("__name__")
 app.config['SECRET_KEY'] = '12345'
 
-# @app.route('/login',methods=["GET","POST"])
-# def loginPage():
-#     if request.method == "POST":
-#         email = request.form['email']
-#         pwd = request.form["pwd"]
-#         if(verifyAccount(email)):
-#             return render_template("200.html")
-#         return render_template("login.html",errorMsg="Email Not Found")
-#     else:
-#         return render_template("login.html")
-
-
 
 @app.route('/',methods=["GET"])
 def main():
@@ -53,7 +37,7 @@ def main():
         return resp
 
 
-@app.route('/loginAPI',methods=['POST',])
+@app.route('/loginAPI',methods=['POST'])
 def loginAPI():
     _json = request.json
     username = _json['username']
@@ -91,7 +75,7 @@ def logoutAPI():
 
 
 
-@app.route('/registerAPI',methods=['POST',])
+@app.route('/registerAPI',methods=['POST'])
 def registerAPI():
     _json = request.json
     email = _json["email"]
