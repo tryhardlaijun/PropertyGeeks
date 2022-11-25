@@ -3,7 +3,7 @@ from flask import Flask, request
 import json
 
 app = Flask(__name__)
-
+limit = 10000
 conn = mysql.connector.connect(user='normanchia', password='normanchia',
                               host='localhost',database='ict2102')
 if conn:
@@ -29,7 +29,7 @@ def getQuarter():
         rowDict ={"QuarterID":row[0],"year":row[1],"quarter":row[2]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/all/getFlatTypes' , methods = ['GET'])
@@ -47,7 +47,7 @@ def getFlatTypes():
         rowDict ={"FID":row[0],"room_type":row[1]}
         array.append(rowDict)
 
-    output = {"Query": query_statement, "Results": array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/all/getRegion' , methods = ['GET'])
@@ -65,7 +65,7 @@ def getRegion():
         rowDict ={"RID":row[0],"town":row[1]}
         array.append(rowDict)
 
-    output = {"Query": query_statement, "Results": array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/all/getFlatsByFilter' , methods = ['GET'])
@@ -77,13 +77,13 @@ def getFlatByFilter():
                       "FROM ((FlatDetails INNER JOIN Region ON FlatDetails.RID = Region.RID) " \
                       "INNER JOIN FlatType ON FlatDetails.FID = FlatType.FID) "
     if fid_input and rid_input:
-        query_statement += f"WHERE FlatDetails.FID = {fid_input} AND FlatDetails.RID = {rid_input};"
+        query_statement += f"WHERE FlatDetails.FID = {fid_input} AND FlatDetails.RID = {rid_input} "
     elif fid_input:
-        query_statement += f"WHERE FlatDetails.FID = {fid_input};"
+        query_statement += f"WHERE FlatDetails.FID = {fid_input} "
     elif rid_input:
-        query_statement += f"WHERE FlatDetails.RID = {rid_input};"
-    else:
-        query_statement += ";"
+        query_statement += f"WHERE FlatDetails.RID = {rid_input} "
+
+    query_statement += f"LIMIT {limit};"
     print(query_statement)
 
     cursor = conn.cursor()
@@ -96,7 +96,7 @@ def getFlatByFilter():
                   "town":row[5],"room_type":row[6],"RID":row[7],"FID":row[8]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/filter/getFlatRental' , methods = ['GET'])
@@ -119,7 +119,7 @@ def getFlatRental():
         rowDict ={"RT_ID":row[0],"median_rent":row[1],"QuarterID":row[3],"year":row[4],"quarter":row[5]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/filter/getFlatDetails' , methods = ['GET'])
@@ -142,7 +142,7 @@ def getFlatDetails():
     array ={"FD_ID":row[0],"lease_commence_date":row[1],"block":row[2],"model":row[3],"floor_area_sqm":row[4],
             "town":row[5],"room_type":row[6],"RID":row[7],"FID":row[8]}
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/flat/filter/getFlatPrice' , methods = ['GET'])
@@ -165,7 +165,7 @@ def getFlatPrice():
         rowDict ={"RS_ID":row[0],"price":row[1],"QuarterID":row[3],"year":row[4],"quarter":row[5]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/all/getPropertyType' , methods = ['GET'])
@@ -183,7 +183,7 @@ def getPropertyType():
         rowDict = {"FID": row[0], "room_type": row[1]}
         array.append(rowDict)
 
-    output = {"Query": query_statement, "Results": array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/all/getPMIByFilter' , methods = ['GET'])
@@ -198,9 +198,9 @@ def getPMIByFilter():
                       f"WHERE project LIKE'%{proj_input}%' " \
                       f"AND street LIKE '%{street_input}%' "
     if pid_input:
-        query_statement += f"AND PMIDetails.PType_ID = {pid_input};"
-    else:
-        query_statement += ";"
+        query_statement += f"AND PMIDetails.PType_ID = {pid_input} "
+
+    query_statement += f"LIMIT {limit};"
     print(query_statement)
 
     cursor = conn.cursor()
@@ -213,7 +213,7 @@ def getPMIByFilter():
                   "PType_ID":row[5], "propertyType":row[6]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
@@ -237,7 +237,7 @@ def getPMIRental():
                   "year":row[5],"quarter":row[6]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/filter/getPMISalesPrice' , methods = ['GET'])
@@ -261,7 +261,7 @@ def getPMISalesPrice():
                   "year":row[5],"quarter":row[6]}
         array.append(rowDict)
 
-    output = {"Query":query_statement,"Results":array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/view/addBookmark', methods = ['POST'])
@@ -314,5 +314,6 @@ def getBookmark():
                     "tenure":row[13],"PType_ID":row[14]}
         array.append(rowDict)
 
-    output = {"Query": query_statement, "Results": array}
+    output = {"Query":query_statement,"Count":len(array),"Results":array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
+
