@@ -15,29 +15,44 @@ except pymongo.errors.OperationFailure as err:
 
 print ("Connected Successfully")
 db = client['2103_database']
-col = db["ResalePMI"]
+col = db["Rent"]
+
+with open(' ResaleHDB_nosql.json') as file:
+    file_data = json.load(file)
+# col.insert_many(file_data)
 
 @app.route('/')
 def default():
     return "Hello World"
 
-@app.route('/all/getFlatTypes', methods= ['GET'])
+@app.route('/flat/all/getFlatTypes', methods= ['GET'])
 def getFlatTypes():
-    col = db["RentHDB"]
+    col = db["Rent"]
     queryStatement = col.aggregate([{"$group": {
             "_id": "$room_type"}}])
     return list(queryStatement) 
 
-@app.route('/all/getQuarter' , methods = ['GET'])
+@app.route('/flat/all/getQuarter' , methods = ['GET'])
 def getQuarter():
-    col = db["RentHDB"]
-    col2 = db["RentPMI"]
+    col = db["Rent"]
+    # col2 = db["RentPMI"]
     queryStatement = col.aggregate([
         {"$group": {
             "_id": {
                 "year":"$year",
                 "quarter": "$quarter"
         }}},
+        { "$sort":{"_id.year":1,"_id.quarter":1}}
+        ])
+    return list(queryStatement)
+
+@app.route('/flat/all/getRegion' , methods = ['GET'])
+def getRegion():
+    col = db["Rent"]
+    # col2 = db["RentPMI"]
+    queryStatement = col.aggregate([
+        {"$group": {
+            "_id": "$town"}},
         { "$sort":{"_id.year":1,"_id.quarter":1}}
         ])
     return list(queryStatement)
