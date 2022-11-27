@@ -17,6 +17,18 @@ except pymongo.errors.OperationFailure as err:
 print ("Connected Successfully")
 db = client['2103_database']
 col = db["PropertyGeeks"]
+# col.create_index("RT_ID")
+# col.create_index("RS_ID")
+# col.create_index("PRESALE_ID")
+# col.create_index("PRENT_ID")
+# col.create_index("room_type")
+# col.create_index("town")
+# col.create_index("quarter")
+# col.create_index("year")
+# col.create_index("PRENT_ID")
+# col.create_index("property_type")
+# col.create_index("street")
+# col.create_index("project")
 
 # with open('ResaleHDB_nosql.json') as file:
 #     file_data = json.load(file)
@@ -26,16 +38,16 @@ col = db["PropertyGeeks"]
 def default():
     return "WELCOME TO PROPERTY GEEKS"
 
+# Get all the HDB types
 @app.route('/flat/all/getFlatTypes', methods= ['GET'])
 def getFlatTypes():
-    col = db["PropertyGeeks"]
     queryStatement = col.aggregate([{"$group": {
             "_id": "$room_type"}}])
     return list(queryStatement) 
 
+# Get all the Quarter(HDB)
 @app.route('/flat/all/getQuarter' , methods = ['GET'])
 def getQuarter():
-    col = db["PropertyGeeks"]
     queryStatement = col.aggregate([
         {"$match":{
             "$or":[
@@ -58,10 +70,9 @@ def getQuarter():
         ])
     return list(queryStatement)
 
+# Get all the Region(HDB)
 @app.route('/flat/all/getRegion' , methods = ['GET'])
 def getRegion():
-    col = db["PropertyGeeks"]
-    # col2 = db["RentPMI"]
     queryStatement = col.aggregate([
         {"$group": {
             "_id": "$town"}},
@@ -69,12 +80,15 @@ def getRegion():
         ])
     return list(queryStatement)
 
+# Filter the HDB by region and type
 @app.route('/flat/all/getFlatsByFilter' , methods = ['GET'])
 def getFlatByFilter():
-    col = db["PropertyGeeks"]
     flat_type = request.args.get("flat_type")
-    Region = request.args.get("Region")
+    region = request.args.get("region")
     pipeline = [
+    # {
+    #     "$limit":1000,
+    # },
     {
         "$match":{
             "$or":[
@@ -89,62 +103,61 @@ def getFlatByFilter():
             ],
         }},
         ]
-    if flat_type and Region:
-        pipeline[0]["$match"]["town"] = Region
+    if flat_type:
+        # pipeline[0]["$match"]["town"] = Region
         pipeline[0]["$match"]["room_type"] = flat_type
-        print("HELLO")
-        
-    elif flat_type and not Region:
-        pipeline[0]["$match"]["room_type"] = flat_type
-    elif not flat_type and Region:
-        pipeline[0]["$match"]["town"] = Region
+    elif region:
+        pipeline[0]["$match"]["town"] = region
     pipeline.append({
             "$project":{    
                 "_id":0,
+                "year":0,
+                "quarter":0,
                 "median_rent": 0,
             }
         })
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+# Get HDB rental price by ID
 @app.route('/flat/filter/getFlatRental' , methods = ['GET'])
 def getFlatRental():
-    rentID = request.args.get("rentID")
+    rent_id = request.args.get("rent_id")
     pipeline = [
     {
         "$match":{
             "RT_ID":{
                 "$exists": "true"
             },
-            "RT_ID": rentID
+            "RT_ID": rent_id
         }
     },
     {
         "$project":{    
             "_id":0,
-            "town":0,
-            "floor_area_sqm":0,
             "lease_commence_date": 0,
             "block": 0,
             "model": 0,
-            # "median_rent": 0,
+            "floor_area_sqm":0,
+            "town":0,
+            "room_type":0
         }
     }
     ]
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
-
+# get HDB rent details by ID
 @app.route('/flat/filter/getRentFlatDetails' , methods = ['GET'])
 def getRentFlatDetails():
-    rentID = request.args.get("rentID")
+    rent_id = request.args.get("rent_id")
     pipeline = [
     {
          "$match":{
             "RT_ID":{
                 "$exists": "true"
             },
-            "RT_ID": rentID
+            "RT_ID": rent_id
         }
     },
     {
@@ -154,19 +167,19 @@ def getRentFlatDetails():
     }
     ]
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+# get HDB resale details by ID
 @app.route('/flat/filter/getResaleFlatDetails' , methods = ['GET'])
 def getResaleFlatDetails():
-    resaleID = request.args.get("resaleID")
+    resale_id = request.args.get("resale_id")
     pipeline = [
     {
          "$match":{
-            
                 "RS_ID":{
                     "$exists": "true"
             },
-            "RS_ID": int(resaleID)
+            "RS_ID": int(resale_id)
         }
     },
     {
@@ -176,24 +189,19 @@ def getResaleFlatDetails():
     }
     ]
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+# Get HDB resale price by ID
 @app.route('/flat/filter/getFlatPrice' , methods = ['GET'])
 def getFlatPrice():
-    resaleID = request.args.get("resaleID")
-    query_statement = "SELECT RS_ID,price,ResaleFlat.FD_ID,ResaleFlat.QuarterID,year,quarter " \
-                      "FROM (ResaleFlat " \
-                      "INNER JOIN Quarter ON ResaleFlat.QuarterID = Quarter.QuarterID) " \
-                      f"WHERE FD_ID = {input} " \
-                      f"ORDER BY year,quarter ASC;"
-
+    resale_id = request.args.get("resale_id")
     pipeline = [
     {
          "$match":{    
                 "RS_ID":{
                     "$exists": "true"
             },
-            "RS_ID": int(resaleID)
+            "RS_ID": int(resale_id)
         }
     },
     {
@@ -210,22 +218,20 @@ def getFlatPrice():
     ]
     print(pipeline)
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
 
 @app.route('/pmi/all/getPropertyType' , methods = ['GET'])
 def getPropertyType():  
-    col = db["PropertyGeeks"]
     queryStatement = col.aggregate([{"$group": {
             "_id": "$propertyType"}}])
     return list(queryStatement) 
-    # return json.dumps(output), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/all/getPMIByFilter' , methods = ['GET'])
 def getPMIByFilter():
-    pid_input = request.args.get('pid') #propertyTypeID
-    proj_input = request.args.get('project') 
-    street_input = request.args.get('street')
+    property_type = request.args.get('property_type') #propertyTypeID
+    project = request.args.get('project') 
+    street = request.args.get('street')
     pipeline = [
     {
         "$match":{
@@ -252,15 +258,15 @@ def getPMIByFilter():
         }
     }
     ]
-    if pid_input:
-        pipeline[0]["$match"]["propertyType"] = pid_input
-    if proj_input:
-        pipeline[0]["$match"]["project"] = proj_input
-    if street_input:
-        pipeline[0]["$match"]["street"] = street_input
+    if property_type:
+        pipeline[0]["$match"]["propertyType"] = property_type
+    if project:
+        pipeline[0]["$match"]["project"] = project
+    if street:
+        pipeline[0]["$match"]["street"] = street
     
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
     
 
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
@@ -287,7 +293,7 @@ def getPMIRental():
     }
     ]
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
 @app.route('/pmi/filter/getPMISalesPrice' , methods = ['GET'])
 def getPMISalesPrice():
@@ -313,16 +319,16 @@ def getPMISalesPrice():
     }
     ]
     queryStatement = col.aggregate(pipeline)
-    return dumps(list(queryStatement),indent=4), 200, {'ContentType': 'application/json'}
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
 @app.route('/view/addBookmark', methods = ['POST'])
 def addBookmark():
-    userID = request.form['UserID']
+    user_id = request.form['user_id']
     pmi_id = request.form['PMI_ID'] or "NULL"
     fd_id = request.form['FD_ID'] or "NULL"
     description = request.form['description'] or ""
     query_statement = "INSERT INTO bookmark (description,userID,PMI_ID,FD_ID) " \
-                      f"VALUES ('{description}',{userID},{pmi_id},{fd_id});"
+                      f"VALUES ('{description}',{user_id},{pmi_id},{fd_id});"
     print(query_statement)
     cursor = conn.cursor()
     response = {}
