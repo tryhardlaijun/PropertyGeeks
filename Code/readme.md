@@ -23,3 +23,15 @@ http://127.0.0.1:500/flat/filter/getFlatRental0/filter/getFlatRental?fd_id=33
 
 //Get Flat Price by Flat Detail ID
 http://127.0.0.1:5000/filter/getFlatPrice?fd_id=33
+
+PMI
+http://127.0.0.1:5001/pmi/all/getPropertyType
+http://127.0.0.1:5001/pmi/all/getStreets
+http://127.0.0.1:5001/pmi/all/getPMIByFilter
+http://127.0.0.1:5001/pmi/all/getPMIByFilter?property_type=Condominium
+http://127.0.0.1:5001/pmi/all/getPMIByFilter?project=1 KING ALBERT PARK
+http://127.0.0.1:5001/pmi/all/getPMIByFilter?street=KING ALBERT PARK
+
+http://127.0.0.1:5001/pmi/filter/getPMIRental?pmi_id=10
+
+http://127.0.0.1:5001/pmi/filter/getPMISalesPrice?pmi_id=10
