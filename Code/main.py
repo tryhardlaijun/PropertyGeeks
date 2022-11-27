@@ -1,11 +1,17 @@
 import mysql.connector
-from flask import Flask, request
+from flask import Flask, request, session, jsonify
 import json
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+import sys
 
+CORS(app)
+app.config['SECRET_KEY'] = '12345'
 app = Flask(__name__)
 limit = 10000
 try:
-    conn = mysql.connector.connect(user='normanchia', password='normanchia',
+    conn = mysql.connector.connect(user='root', password='admin',
                               host='localhost',database='ict2102')
     print(conn)
     print("Connection Successful")
