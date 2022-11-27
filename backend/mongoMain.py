@@ -86,9 +86,6 @@ def getFlatByFilter():
     flat_type = request.args.get("flat_type")
     region = request.args.get("region")
     pipeline = [
-    # {
-    #     "$limit":1000,
-    # },
     {
         "$match":{
             "$or":[
@@ -227,6 +224,22 @@ def getPropertyType():
             "_id": "$propertyType"}}])
     return list(queryStatement) 
 
+@app.route('/pmi/all/getStreets' , methods = ['GET'])
+def getStreets():  
+    queryStatement = col.aggregate([
+        {"$group": {
+            "_id": "$street"}}
+        ])
+    return list(queryStatement)
+
+@app.route('/pmi/all/getProjects' , methods = ['GET'])
+def getProjects():  
+    queryStatement = col.aggregate([
+        {"$group": {
+            "_id": "$project"}}
+        ])
+    return list(queryStatement)
+
 @app.route('/pmi/all/getPMIByFilter' , methods = ['GET'])
 def getPMIByFilter():
     property_type = request.args.get('property_type') #propertyTypeID
@@ -269,6 +282,7 @@ def getPMIByFilter():
     return list(queryStatement), 200, {'ContentType': 'application/json'}
     
 
+
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
 def getPMIRental():
     pmi_id = request.args.get('pmi_id')
@@ -289,6 +303,27 @@ def getPMIRental():
             "propertyType": 0,
             "typeOfArea": 0,
             "tenure": 0,
+        }
+    }
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
+
+@app.route('/pmi/filter/getPMIRentalDetails' , methods = ['GET'])
+def getPMIRentalDetails():
+    pmi_id = request.args.get('pmi_id')
+    pipeline = [
+    {
+        "$match":{
+            "PRENT_ID":{
+                "$exists": "true"
+            },
+            "PRENT_ID" : pmi_id
+        }
+    },
+    {
+        "$project":{    
+            "_id":0,
         }
     }
     ]
@@ -321,46 +356,118 @@ def getPMISalesPrice():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+@app.route('/pmi/filter/getPMISalesDetails' , methods = ['GET'])
+def getPMISalesDetails():
+    pmi_id = request.args.get('pmi_id')
+    pipeline = [
+    {
+        "$match":{
+            "PSALE_ID":{
+                "$exists": "true"
+            },
+            "PSALE_ID" : pmi_id
+        }
+    },
+    {
+        "$project":{    
+            "_id":0,
+        }
+    }
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
+
 @app.route('/view/addBookmark', methods = ['POST'])
 def addBookmark():
-    user_id = request.form['user_id']
-    pmi_id = request.form['PMI_ID'] or "NULL"
-    fd_id = request.form['FD_ID'] or "NULL"
-    description = request.form['description'] or ""
-    query_statement = "INSERT INTO bookmark (description,userID,PMI_ID,FD_ID) " \
-                      f"VALUES ('{description}',{user_id},{pmi_id},{fd_id});"
-    print(query_statement)
-    cursor = conn.cursor()
-    response = {}
-    responseCode = 400
-    try:
-        cursor.execute(query_statement)
-        conn.commit()
-        response['success'] = 1
-        responseCode = 200
-    except:
-        response['success'] = 0
-        response['message'] = "Fail to insert"
+    user_id = request.args.form('user_id')
+    pmi_id = request.args.form('pmi_id') or "None"
+    fd_id = request.args.form('FD_ID') or "None"
+    description = request.form.get('description') or ""
+    haveBookMark = col.find({"user_id":user_id})
+    count = len(list(haveBookMark))
+    if count == 0:
+        col.insert_one({
+            "user_id":user_id,
+            "type": "bookmark",
+            "bookmarks":[
+            ]
+        })
+    if pmi_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$push":{
+                    "bookmarks": {
+                        "pmi_id":pmi_id,
+                        "description":description
+                    }
+                }
+            }
+    )
+    if fd_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$push":{
+                    "bookmarks": {
+                        "fd_id":fd_id,
+                        "description":description
+                    }
+                }
+            }
+    )
+    return {"status":200}
 
-    output = {"Query": query_statement, "Results": response}
-    return json.dumps(output), responseCode, {'ContentType': 'application/json'}
+@app.route('/view/removeBookmark', methods = ['POST'])
+def removeBookmark():
+    user_id = request.form.get('user_id')
+    pmi_id = request.form.get('pmi_id') or "None"
+    fd_id = request.form.get('FD_ID') or "None"
+    if pmi_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$pull":{
+                    "bookmarks": {
+                        "pmi_id":pmi_id,
+                    }
+                }
+            }
+    )
+    if fd_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$push":{
+                    "bookmarks": {
+                        "fd_id":fd_id,
+                    }
+                }
+            }
+    )
+    return {"status":200}
 
-@app.route('/view/getBookmark', methods = ['POST'])
+@app.route('/view/getBookmark', methods = ['GET'])
 def getBookmark():
-    userID = request.form['UserID']
-    query_statement = "SELECT BookmarkID,description,Bookmark.PMI_ID,Bookmark.FD_ID,lease_commence_date," \
-                      "block,model,floor_area_sqm,RID,FID,project,street,typeOfArea,tenure,PType_ID " \
-                      "FROM bookmark " \
-                      "LEFT JOIN FlatDetails " \
-                      "ON Bookmark.FD_ID = FlatDetails.FD_ID " \
-                      "LEFT JOIN PMIDetails " \
-                      "ON Bookmark.PMI_ID = PMIDetails.PMI_ID " \
-                      f"WHERE UserID = {userID};"
+    user_id = request.args.get('user_id')
+    pipeline = [
+    {
+        "$match":{
+            "type":{
+                "$exists": "true"
+            },
+            "user_id" : user_id
+        }
+    },
+    {
+        "$project":{    
+            "_id":0,
+        }
+    }
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
         
-
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=1)
