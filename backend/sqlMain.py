@@ -1,13 +1,11 @@
 import mysql.connector
 from flask import Flask, request
 import json
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
 limit = 10000
 try:
-    conn = mysql.connector.connect(user='root', password='admin',
+    conn = mysql.connector.connect(user='normanchia', password='normanchia',
                               host='localhost',database='ict2102')
     print(conn)
     print("Connection Successful")
@@ -401,6 +399,7 @@ def getBookmark():
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
+
 
 @app.route('/view/deleteBookmark', methods = ['POST'])
 def deleteBookmark():
