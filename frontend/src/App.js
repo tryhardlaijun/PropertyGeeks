@@ -1,31 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios'
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Dashboard from "./components/Dashboard/Dashboard";
+import Login from "./components/Login/Login";
+import useToken from "./useToken";
+import Navbar from "./components/Navbar/Navbar";
+import "./index.css";
+import Logout from "./components/Logout/Logout";
+import HDB from "./components/HDB/HDB";
+import Resale from "./components/HDB/Resale";
 
 function App() {
-  const [getMessage, setGetMessage] = useState({})
+	const { token, setToken } = useToken();
 
-  useEffect(()=>{
-    axios.get('http://127.0.0.1:5000/flask/hello').then(response => {
-      console.log("SUCCESS", response)
-      setGetMessage(response)
-    }).catch(error => {
-      console.log(error)
-    })
-  }, [])
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>React + Flask Tutorial</p>
-        <div>{getMessage.status === 200 ? 
-          <h3>{getMessage.data.message}</h3>
-          :
-          <h3>LOADING</h3>}</div>
-      </header>
-    </div>
-  );
+	const isLoggedIn = () =>{
+		if(token){
+			return true
+		}
+		return false
+	}
+
+	return (
+		<>
+			<BrowserRouter>
+				<Navbar />
+				<Routes>
+					<Route path="/" element={<Dashboard />} />
+					<Route path="/HDB" element={<HDB />} />
+					<Route path="/PMI" element={<Dashboard />} />
+					<Route path="/login" element={<Login setToken={setToken} isLoggedIn = {isLoggedIn()}/>} />
+					<Route path="/profile" element={<Dashboard />} />
+					<Route path="/logout" element={<Logout />} />
+					<Route path="/resale/:id" element={<Resale />} />
+				</Routes>
+			</BrowserRouter>
+		</>
+	);
 }
 
 export default App;

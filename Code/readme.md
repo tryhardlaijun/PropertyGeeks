@@ -10,10 +10,10 @@ http://127.0.0.1:5000/all/getQuarter
 http://127.0.0.1:5000/all/getRegion
 
 //Get All Flats By FlatType or Region
-http://127.0.0.1:5000/all/getFlatByFilter
-http://127.0.0.1:5000/all/getFlatByFilter?fid=7
-http://127.0.0.1:5000/all/getFlatByFilter?rid=7
-http://127.0.0.1:5000/all/getFlatByFilter?fid=7&rid=7
+http://127.0.0.1:5000/all/getFlatsByFilter
+http://127.0.0.1:5000/all/getFlatsByFilter?fid=7
+http://127.0.0.1:5000/all/getFlatsByFilter?rid=7
+http://127.0.0.1:5000/all/getFlatsByFilter?fid=7&rid=7
 
 //Get Flat Details by Flat Detail ID
 http://127.0.0.1:5000/filter/getFlatDetails?fd_id=22

@@ -1,10 +1,11 @@
 import mysql.connector
 from flask import Flask, request
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
-
-conn = mysql.connector.connect(user='normanchia', password='normanchia',
+CORS(app)
+conn = mysql.connector.connect(user='root', password='admin',
                               host='localhost',database='ict2102')
 if conn:
     print ("Connected Successfully")
@@ -83,7 +84,7 @@ def getFlatByFilter():
     elif rid_input:
         query_statement += f"WHERE FlatDetails.RID = {rid_input};"
     else:
-        query_statement += ";"
+        query_statement += "LIMIT 1000;"
     print(query_statement)
 
     cursor = conn.cursor()
@@ -316,3 +317,7 @@ def getBookmark():
 
     output = {"Query": query_statement, "Results": array}
     return json.dumps(output), 200, {'ContentType': 'application/json'}
+
+@app.route('/login', methods = ['POST'])
+def login():
+    return {"token":"test123"}
