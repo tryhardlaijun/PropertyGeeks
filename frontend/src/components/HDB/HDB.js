@@ -12,13 +12,16 @@ import Paper from "@mui/material/Paper";
 const Record = (props) => (
 	<TableRow>
 		<TableCell align="center">{props.record.town}</TableCell>
-        <TableCell align="center">{props.record.block}</TableCell>
+		<TableCell align="center">{props.record.block}</TableCell>
 		<TableCell align="center">{props.record.room_type}</TableCell>
 		<TableCell align="center">{props.record.floor_area_sqm}</TableCell>
 		<TableCell align="center">
 			<button type="button" className="updatebutton me-1">
-				<Link to={`/resale/${props.record.FD_ID}`} style={{ textDecoration: "none", color: "black" }}>
-					View 
+				<Link
+					to={`/resale/${props.record.FD_ID}`}
+					style={{ textDecoration: "none", color: "black" }}
+				>
+					View
 				</Link>
 			</button>
 		</TableCell>
@@ -27,26 +30,81 @@ const Record = (props) => (
 
 function HDB() {
 	const [HDBFlats, setHDBFlats] = useState([]);
-    const [filter, setFilters] = useState({})
+	const [filter, setFilters] = useState({
+		town: null,
+		type: null,
+	});
+	const [types, setTypes] = useState([]);
+	const [towns, setTowns] = useState([]);
+
+	function handleOnchange(value) {
+		console.log(value);
+		return setFilters((prev) => {
+			return { ...prev, ...value };
+		});
+	}
+
 	useEffect(() => {
+		let URI = "http://127.0.0.1:5000/flat/all/getFlatsByFilter?";
+		if (filter.town != null && filter.type != null) {
+			URI = URI + `fid=${filter.type}&rid=${filter.town}`;
+			console.log(URI);
+		} else if (filter.town != null) {
+			URI = URI + `rid=${filter.town}`;
+			console.log(URI);
+		} else if (filter.type != null) {
+			URI = URI + `fid=${filter.type}`;
+			console.log(URI);
+		}
 		async function getRecords() {
 			try {
-				const response = await axios(
-					"http://127.0.0.1:5000/flat/all/getFlatsByFilter"
-				);
+				const response = await axios(URI);
 				console.log(response.data);
 				const records = await response.data.Results;
 				setHDBFlats(records);
 			} catch (error) {
 				const message = `An error occurred: ${error}`;
-				window.alert(message);
+				console.log(message);
 				return;
 			}
 		}
-		getRecords();
-
+		async function getTypes() {
+			try {
+				const response = await axios(
+					"http://127.0.0.1:5000/flat/all/getFlatTypes"
+				);
+				console.log(response.data);
+				const records = await response.data.Results;
+				setTypes(records);
+			} catch (error) {
+				const message = `An error occurred: ${error}`;
+				console.log(message);
+				return;
+			}
+		}
+		async function getRegion() {
+			try {
+				const response = await axios(
+					"http://127.0.0.1:5000/flat/all/getRegion"
+				);
+				console.log(response.data);
+				const records = await response.data.Results;
+				setTowns(records);
+			} catch (error) {
+				const message = `An error occurred: ${error}`;
+				console.log(message);
+				return;
+			}
+		}
+		if (filter.town === null && filter.type === null) {
+			getRegion().then(() => {
+				getTypes();
+			});
+		} else {
+			getRecords();
+		}
 		return;
-	}, []);
+	}, [filter.town, filter.type]);
 
 	function recordList() {
 		return HDBFlats.map((record, index) => {
@@ -54,17 +112,57 @@ function HDB() {
 		});
 	}
 
+	function townList() {
+		return towns.map((town, index) => {
+			return (
+				<option key={town.RID} value={town.RID}>
+					{town.town}
+				</option>
+			);
+		});
+	}
+
+	function typeList() {
+		return types.map((type, index) => {
+			return (
+				<option key={type.FID} value={type.FID}>
+					{type.room_type}
+				</option>
+			);
+		});
+	}
+
 	return (
 		<div className="container mt-3">
 			<h2>HDB</h2>
-            <div className="row">
-                <div className="col">Town</div>
-                <div className="col">Block</div>
-                <div className="col">Room-type</div>
-                <div className="col">Price</div>
-                <div className="col">Year</div>
-                <div className="col">Model</div>
-            </div>
+			<div className="row">
+				<div className="col">
+					<select
+						class="form-control"
+						onChange={(e) =>
+							handleOnchange({ town: e.target.value })
+						}
+					>
+						<option selected="true" disabled="disabled">
+							Select Town
+						</option>
+						{townList()}
+					</select>
+				</div>
+				<div className="col">
+					<select
+						class="form-control"
+						onChange={(e) =>
+							handleOnchange({ type: e.target.value })
+						}
+					>
+						<option selected="true" disabled="disabled">
+							Select Room Type
+						</option>
+						{typeList()}
+					</select>
+				</div>
+			</div>
 			<TableContainer component={Paper}>
 				<Table
 					sx={{ minWidth: 300 }}
@@ -73,11 +171,21 @@ function HDB() {
 				>
 					<TableHead>
 						<TableRow style={{ background: "#E8DED1" }}>
-							<TableCell align="center"><b>Town</b></TableCell>
-							<TableCell align="center"><b>Block</b></TableCell>
-							<TableCell align="center"><b>Room-Type</b></TableCell>
-							<TableCell align="center"><b>Size (sqm)</b></TableCell>
-							<TableCell align="center"><b>Actions</b></TableCell>
+							<TableCell align="center">
+								<b>Town</b>
+							</TableCell>
+							<TableCell align="center">
+								<b>Block</b>
+							</TableCell>
+							<TableCell align="center">
+								<b>Room-Type</b>
+							</TableCell>
+							<TableCell align="center">
+								<b>Size (sqm)</b>
+							</TableCell>
+							<TableCell align="center">
+								<b>Actions</b>
+							</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>{recordList()}</TableBody>
