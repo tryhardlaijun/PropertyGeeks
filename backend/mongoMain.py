@@ -38,9 +38,16 @@ def getQuarter():
     col = db["PropertyGeeks"]
     queryStatement = col.aggregate([
         {"$match":{
-            "RT_ID":{
-                "$exists": "true"
-            },
+            "$or":[
+            {
+                "RT_ID":{
+                    "$exists": "true"
+            }},
+            {
+                "PRENT_ID":{
+                    "$exists": "true"
+            }}
+            ],
         }},
         {"$group": {
             "_id": {
@@ -242,7 +249,6 @@ def getPMIByFilter():
             "area(Sqm)": 0,
             "tenure": 0,
             "rent_price": 0
-            
         }
     }
     ]
