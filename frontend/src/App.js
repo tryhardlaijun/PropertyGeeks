@@ -11,6 +11,7 @@ import Resale from "./components/HDB/Resale";
 import PMI from "./components/PMI/PMI";
 import PMIrent from "./components/PMI/PMIrental";
 import PMIsale from "./components/PMI/PMIsale";
+import SignupPage from "./components/Signup/Signup";
 
 function App() {
 	const { token, setToken } = useToken();
@@ -36,6 +37,7 @@ function App() {
 					<Route path="/resale/:id" element={<Resale />} />
 					<Route path="/pmirental/:id" element={<PMIrent />} />
 					<Route path="/pmisale/:id" element={<PMIsale />} />
+					<Route path="/signup" element={<SignupPage />} />
 				</Routes>
 			</BrowserRouter>
 		</>

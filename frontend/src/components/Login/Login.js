@@ -5,7 +5,7 @@ import axios from "axios";
 
 async function loginUser(credentials) {
 	try {
-		const response = await axios.post("http://127.0.0.1:5000/login");
+		const response = await axios.post("http://127.0.0.1:5000/loginAPI",credentials);
 		console.log(response);
 		const token = await response.data.token;
 		return token;
@@ -17,18 +17,27 @@ async function loginUser(credentials) {
 }
 
 export default function Login({ setToken , isLoggedIn}) {
-	const [username, setUserName] = useState();
-	const [password, setPassword] = useState();
+	const [form, setForm] = useState({
+		username:"",
+		password:""
+	});
 	const navigate = useNavigate();
 	const handleSubmit = async (e) => {
+		const newPerson = {...form}
 		e.preventDefault();
-		const token = await loginUser({
-			username,
-			password,
-		});
+		const token = await loginUser(newPerson);
 		console.log(token);
-		setToken(token);
+		if(token){
+			setToken(token);
+		}
+		
 	};
+	function updateForm(value) {
+		return setForm((prev) => {
+			console.log(form);
+			return { ...prev, ...value };
+		});
+	}
 	useEffect(() => {
 		if(isLoggedIn){
 			navigate("/")
@@ -56,7 +65,7 @@ export default function Login({ setToken , isLoggedIn}) {
 													type="text"
 													className="form-control form-control-lg rounded-0"
 													required={true}
-													onChange={(e) => setUserName(e.target.value)}
+													onChange={(e) => updateForm({username:e.target.value})}
 												/>
 											</div>
 											<div className="form-group mt-3">
@@ -65,7 +74,7 @@ export default function Login({ setToken , isLoggedIn}) {
 													type="password"
 													className="form-control form-control-lg rounded-0"
 													required={true}
-													onChange={(e) => setPassword(e.target.value)}
+													onChange={(e) => updateForm({password:e.target.value})}
 												/>
 											</div>
 											<button

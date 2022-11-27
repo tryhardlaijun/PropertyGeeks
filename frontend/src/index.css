@@ -38,3 +38,13 @@ code {
 .bodyText{
   font-family: 'Source Sans Pro', sans-serif;
 }
+
+.parentForm{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 70px;
+  margin-left: 70px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
