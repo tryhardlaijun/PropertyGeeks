@@ -1,13 +1,16 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
 from datetime import datetime
+from flask_cors import CORS
 import pymongo
 import json
 import sys
+import certifi
 from bson.json_util import dumps, loads
 
 app = Flask(__name__)
-
-client = pymongo.MongoClient("mongodb+srv://Cluster73324:qpwoeiruty@cluster73324.dsnxfd1.mongodb.net/?retryWrites=true&w=majority")
+CORS(app)
+ca = certifi.where()
+client = pymongo.MongoClient("mongodb+srv://Cluster73324:qpwoeiruty@cluster73324.dsnxfd1.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=ca)
 try:
     client.server_info()
 except pymongo.errors.OperationFailure as err:
@@ -217,7 +220,6 @@ def getFlatPrice():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
-
 @app.route('/pmi/all/getPropertyType' , methods = ['GET'])
 def getPropertyType():  
     queryStatement = col.aggregate([{"$group": {
@@ -280,7 +282,6 @@ def getPMIByFilter():
     
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
-    
 
 
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
@@ -468,6 +469,63 @@ def getBookmark():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
         
+@app.route('/pmi/all/getStreets' , methods = ['GET'])
+def getStreets():  
+    queryStatement = col.aggregate([
+        {"$group": {
+            "_id": "$street"}}
+        ])
+    return list(queryStatement)
+
+@app.route('/pmi/all/getProjects' , methods = ['GET'])
+def getProjects():  
+    queryStatement = col.aggregate([
+        {"$group": {
+            "_id": "$project"}}
+        ])
+    return list(queryStatement)
+
+@app.route('/pmi/filter/getPMIRentalDetails' , methods = ['GET'])
+def getPMIRentalDetails():
+    pmi_id = request.args.get('pmi_id')
+    pipeline = [
+    {
+        "$match":{
+            "PRENT_ID":{
+                "$exists": "true"
+            },
+            "PRENT_ID" : pmi_id
+        }
+    },
+    {
+        "$project":{
+            "_id":0,
+        }
+    }
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
+
+@app.route('/pmi/filter/getPMISalesDetails' , methods = ['GET'])
+def getPMISalesDetails():
+    pmi_id = request.args.get('pmi_id')
+    pipeline = [
+    {
+        "$match":{
+            "PSALE_ID":{
+                "$exists": "true"
+            },
+            "PSALE_ID" : pmi_id
+        }
+    },
+    {
+        "$project":{
+            "_id":0,
+        }
+    }
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
 
 if __name__ == '__main__':
-    app.run(debug=1)
+    app.run(debug=1, port=5001)

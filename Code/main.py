@@ -1,11 +1,17 @@
 import mysql.connector
-from flask import Flask, request
+from flask import Flask, request, session, jsonify
 import json
+from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+import sys
 
 app = Flask(__name__)
+CORS(app)
+app.config['SECRET_KEY'] = '12345'
 limit = 10000
 try:
-    conn = mysql.connector.connect(user='normanchia', password='normanchia',
+    conn = mysql.connector.connect(user='root', password='admin',
                               host='localhost',database='ict2102')
     print(conn)
     print("Connection Successful")
@@ -400,7 +406,6 @@ def getBookmark():
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
 
-
 @app.route('/view/deleteBookmark', methods = ['POST'])
 def deleteBookmark():
     response_code = 400
@@ -428,3 +433,81 @@ def deleteBookmark():
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
+
+@app.route('/loginAPI',methods=['POST'])
+def loginAPI():
+    cur = conn.cursor()
+    _json = request.json
+    print(_json)
+    username = _json['username']
+    pwd = _json['password']
+    if username and pwd:
+        queryEmail = 'SELECT * FROM User WHERE email=%s'
+        cur.execute(queryEmail,(username,))
+        row = cur.fetchone()
+        print(row)
+        if row:
+            username = row[1] 
+            password = row[4]
+            if check_password_hash(password,pwd):
+                session['username'] = username
+                # cur.close()
+                return jsonify({"message":"Login successfully", "token":"token123"})
+            else:
+                resp = jsonify({'message':'Bad request - invalid credentials'})
+                resp.status_code = 400
+                return resp
+        else:
+            resp = jsonify({'message':'Not Found - no record found'})
+            resp.status_code = 404
+            return resp
+    else:
+        resp = jsonify({'message':'Bad request - missing credentials'})
+        resp.status_code = 400
+        return resp
+
+@app.route('/logoutAPI')
+def logoutAPI():
+    if 'username' in session:
+        session.pop('username',None)
+    return jsonify({'messsage':'Succesfully logged out'})
+
+@app.route('/registerAPI',methods=['POST'])
+def registerAPI():
+    cur = conn.cursor()
+    _json = request.json
+    print(_json)
+    email = str(_json["email"])
+    pwd = _json["password"]
+    cfPwd = _json["cfPassword"]
+    address = _json["address"]
+    phoneNumber = _json["phoneNumber"]
+    # check user exist
+    if email and pwd and cfPwd and address and phoneNumber:
+        queryEmail = f'SELECT * FROM User WHERE email = "{email}"'
+        print(queryEmail)
+        cur.execute(queryEmail)
+        rows = cur.fetchall()
+        print(rows)
+        if len(rows) > 0:
+            resp = jsonify({'message':'Bad request - email has been used'})
+            resp.status_code  = 400
+            return resp
+        else: #Meaning no duplicate
+            if pwd == cfPwd:
+                # Proceed to database insertion
+                passhash = generate_password_hash(pwd)
+                insertQuery = f'INSERT INTO User (email,password, address, phoneNo) VALUES ("{email}", "{passhash}", "{address}", "{phoneNumber}")'
+                print(insertQuery)
+                cur.execute(insertQuery)
+                conn.commit()
+                return jsonify({"message":"Register successfully"})
+            else:
+                resp = jsonify({'message':'Bad request - Password not correct'})
+                resp.status_code  = 400
+                return resp
+    else:
+        resp = jsonify({'message':'Bad request - Fields incomplete'})
+        resp.status_code  = 400
+        return resp
+

@@ -11,3 +11,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.updatebutton{
+  background-color: #E8DED1;
+  padding: 5px;
+  text-align: center;
+  border-radius: 6px;
+  width: 90px;
+  height: 40px;
+}
+
+.updatebuttonLong{
+  background-color: #E8DED1;
+  padding: 5px;
+  text-align: center;
+  border-radius: 6px;
+  width: 100%;
+  height: 40px;
+}
+
+.headingFont{
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+}
+
+.bodyText{
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.parentForm{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 70px;
+  margin-left: 70px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
