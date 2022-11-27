@@ -377,12 +377,12 @@ def getPMISalesDetails():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
-@app.route('/view/addBookmark', methods = ['GET','POST'])
+@app.route('/view/addBookmark', methods = ['POST'])
 def addBookmark():
-    user_id = request.args.get('user_id')
-    pmi_id = request.args.get('pmi_id') or "None"
-    fd_id = request.args.get('FD_ID') or "None"
-    description = request.args.get('description') or ""
+    user_id = request.args.form('user_id')
+    pmi_id = request.args.form('pmi_id') or "None"
+    fd_id = request.args.form('FD_ID') or "None"
+    description = request.form.get('description') or ""
     haveBookMark = col.find({"user_id":user_id})
     count = len(list(haveBookMark))
     if count == 0:
@@ -416,7 +416,36 @@ def addBookmark():
                 }
             }
     )
-    return 200
+    return {"status":200}
+
+@app.route('/view/removeBookmark', methods = ['POST'])
+def removeBookmark():
+    user_id = request.form.get('user_id')
+    pmi_id = request.form.get('pmi_id') or "None"
+    fd_id = request.form.get('FD_ID') or "None"
+    if pmi_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$pull":{
+                    "bookmarks": {
+                        "pmi_id":pmi_id,
+                    }
+                }
+            }
+    )
+    if fd_id != "None":
+        col.update_one(
+            {"user_id":user_id},
+            {
+                "$push":{
+                    "bookmarks": {
+                        "fd_id":fd_id,
+                    }
+                }
+            }
+    )
+    return {"status":200}
 
 @app.route('/view/getBookmark', methods = ['GET'])
 def getBookmark():
