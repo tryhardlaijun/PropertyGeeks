@@ -1,17 +1,11 @@
 import mysql.connector
-from flask import Flask, request, session, jsonify
+from flask import Flask, request
 import json
-from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-import sys
 
 app = Flask(__name__)
-CORS(app)
-app.config['SECRET_KEY'] = '12345'
 limit = 10000
 try:
-    conn = mysql.connector.connect(user='root', password='admin',
+    conn = mysql.connector.connect(user='normanchia', password='normanchia',
                               host='localhost',database='ict2102')
     print(conn)
     print("Connection Successful")
@@ -185,6 +179,7 @@ def getFlatDetails():
             array ={"FD_ID":row[0],"lease_commence_date":row[1],"block":row[2],"model":row[3],"floor_area_sqm":row[4],
                     "town":row[5],"room_type":row[6],"RID":row[7],"FID":row[8]}
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
@@ -215,6 +210,7 @@ def getFlatPrice():
                 rowDict ={"RS_ID":row[0],"price":row[1],"QuarterID":row[3],"year":row[4],"quarter":row[5]}
                 array.append(rowDict)
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
@@ -273,6 +269,7 @@ def getPMIByFilter():
                           "PType_ID":row[5], "propertyType":row[6]}
                 array.append(rowDict)
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
@@ -304,6 +301,7 @@ def getPMIRental():
                           "year":row[5],"quarter":row[6]}
                 array.append(rowDict)
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
@@ -335,6 +333,7 @@ def getPMISalesPrice():
                           "year":row[5],"quarter":row[6]}
                 array.append(rowDict)
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
@@ -400,6 +399,7 @@ def getBookmark():
                             "tenure":row[13],"PType_ID":row[14]}
                 array.append(rowDict)
             output = {"Query":query_statement,"Count":len(array),"Results":array}
+            response_code = 200
     except Exception as e:
         response_code = 400
         output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
