@@ -17,18 +17,6 @@ except pymongo.errors.OperationFailure as err:
 print ("Connected Successfully")
 db = client['2103_database']
 col = db["PropertyGeeks"]
-# col.create_index("RT_ID")
-# col.create_index("RS_ID")
-# col.create_index("PRESALE_ID")
-# col.create_index("PRENT_ID")
-# col.create_index("room_type")
-# col.create_index("town")
-# col.create_index("quarter")
-# col.create_index("year")
-# col.create_index("PRENT_ID")
-# col.create_index("property_type")
-# col.create_index("street")
-# col.create_index("project")
 
 # with open('ResaleHDB_nosql.json') as file:
 #     file_data = json.load(file)
@@ -43,6 +31,10 @@ def default():
 def getFlatTypes():
     queryStatement = col.aggregate([{"$group": {
             "_id": "$room_type"}}])
+    explain_output = db.command('aggregate', 'PropertyGeeks', pipeline=([{"$group": {
+            "_id": "$room_type"}}]), explain=True)
+
+    print(explain_output)
     return list(queryStatement) 
 
 # Get all the Quarter(HDB)
@@ -53,11 +45,11 @@ def getQuarter():
             "$or":[
             {
                 "RT_ID":{
-                    "$exists": "true"
+                    "$ne": "null"
             }},
             {
                 "PRENT_ID":{
-                    "$exists": "true"
+                    "$ne": "true"
             }}
             ],
         }},
@@ -85,21 +77,28 @@ def getRegion():
 def getFlatByFilter():
     flat_type = request.args.get("flat_type")
     region = request.args.get("region")
-    pipeline = [
-    {
-        "$match":{
-            "$or":[
-            {
-                "RT_ID":{
-                    "$exists": "true"
+    if flat_type is None and region is None:
+        pipeline = [
+        {
+            "$match":{
+                "$or":[
+                {
+                    "RT_ID":{
+                        "$ne": None
+                }},
+                {
+                    "RS_ID":{
+                        "$ne": None
+                }}
+                ],
             }},
-            {
-                "RS_ID":{
-                    "$exists": "true"
-            }}
-            ],
-        }},
-        ]
+            ]
+    else:
+        pipeline = [
+        {
+            "$match":{
+            }},
+            ]
     if flat_type:
         # pipeline[0]["$match"]["town"] = Region
         pipeline[0]["$match"]["room_type"] = flat_type
@@ -114,6 +113,7 @@ def getFlatByFilter():
             }
         })
     queryStatement = col.aggregate(pipeline)
+    
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
 # Get HDB rental price by ID
@@ -123,9 +123,6 @@ def getFlatRental():
     pipeline = [
     {
         "$match":{
-            "RT_ID":{
-                "$exists": "true"
-            },
             "RT_ID": rent_id
         }
     },
@@ -151,9 +148,6 @@ def getRentFlatDetails():
     pipeline = [
     {
          "$match":{
-            "RT_ID":{
-                "$exists": "true"
-            },
             "RT_ID": rent_id
         }
     },
@@ -173,9 +167,6 @@ def getResaleFlatDetails():
     pipeline = [
     {
          "$match":{
-                "RS_ID":{
-                    "$exists": "true"
-            },
             "RS_ID": int(resale_id)
         }
     },
@@ -195,9 +186,6 @@ def getFlatPrice():
     pipeline = [
     {
          "$match":{    
-                "RS_ID":{
-                    "$exists": "true"
-            },
             "RS_ID": int(resale_id)
         }
     },
@@ -245,32 +233,49 @@ def getPMIByFilter():
     property_type = request.args.get('property_type') #propertyTypeID
     project = request.args.get('project') 
     street = request.args.get('street')
-    pipeline = [
-    {
-        "$match":{
-            "$or":[
-            {
-                "PRENT_ID":{
-                    "$exists": "true"
-            }},
-            {
-                "PSALE_ID":{
-                    "$exists": "true"
-            }}
-            ],
+    if property_type is None and project is None and street is None:
+        pipeline = [
+        {
+            "$match":{
+                "$or":[
+                {
+                    "PRENT_ID":{
+                        "$ne": "null"
+                }},
+                {
+                    "PSALE_ID":{
+                        "$ne": "null"
+                }}
+                ],
+            }
+        },
+        {
+            "$project":{    
+                "_id":0,
+                "year": 0,
+                "quarter": 0,
+                "area(Sqm)": 0,
+                "tenure": 0,
+                "rent_price": 0
+            }
         }
-    },
-    {
-        "$project":{    
-            "_id":0,
-            "year": 0,
-            "quarter": 0,
-            "area(Sqm)": 0,
-            "tenure": 0,
-            "rent_price": 0
+        ]
+    else:
+        pipeline = [
+        {
+            "$match":{
+        }},
+        {
+            "$project":{    
+                "_id":0,
+                "year": 0,
+                "quarter": 0,
+                "area(Sqm)": 0,
+                "tenure": 0,
+                "rent_price": 0
+            }
         }
-    }
-    ]
+        ]
     if property_type:
         pipeline[0]["$match"]["propertyType"] = property_type
     if project:
@@ -290,7 +295,7 @@ def getPMIRental():
     {
         "$match":{
             "PRENT_ID":{
-                "$exists": "true"
+                "$ne": "null"
             },
             "PRENT_ID" : pmi_id
         }
@@ -316,7 +321,7 @@ def getPMIRentalDetails():
     {
         "$match":{
             "PRENT_ID":{
-                "$exists": "true"
+                "$ne": "null"
             },
             "PRENT_ID" : pmi_id
         }
@@ -337,7 +342,7 @@ def getPMISalesPrice():
     {
         "$match":{
             "PSALE_ID":{
-                "$exists": "true"
+                "$ne": "null"
             },
             "PSALE_ID" : pmi_id
         }
@@ -363,7 +368,7 @@ def getPMISalesDetails():
     {
         "$match":{
             "PSALE_ID":{
-                "$exists": "true"
+                "$ne": "null"
             },
             "PSALE_ID" : pmi_id
         }
@@ -454,7 +459,7 @@ def getBookmark():
     {
         "$match":{
             "type":{
-                "$exists": "true"
+                "$ne": "null"
             },
             "user_id" : user_id
         }
