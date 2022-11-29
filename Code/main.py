@@ -440,6 +440,36 @@ def deleteBookmark():
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
 
+
+@app.route('/view/updateBookmark', methods = ['POST'])
+def updateBookmark():
+    response_code = 400
+    output = {}
+    try:
+        if conn:
+            user_id = request.form.get('UserID')
+            bookmark_id = request.form.get('bookmark_id')
+            description = request.form.get('description') or ""
+            if user_id is None:
+                raise Exception("User ID parameter is empty.")
+            if bookmark_id is None:
+                raise Exception("Bookmark ID parameter is empty.")
+            query_statement = "UPDATE Bookmark " \
+                              f"SET description = '{description}' " \
+                              f"WHERE BookmarkID = {bookmark_id} AND UserID = {user_id};"
+            print(query_statement)
+            cursor = conn.cursor()
+            cursor.execute(query_statement)
+            conn.commit()
+            output['success'] = 1
+            response_code = 200
+            output = {"Query": query_statement, "Results": output}
+    except Exception as e:
+        response_code = 400
+        output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
+    finally:
+        return json.dumps(output), response_code, {'ContentType': 'application/json'}
+
 @app.route('/loginAPI',methods=['POST'])
 def loginAPI():
     cur = conn.cursor()
