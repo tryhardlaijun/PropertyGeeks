@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, session, jsonify
 from datetime import datetime
+<<<<<<< HEAD
 from flask_cors import CORS
 import pymongo
 import json
@@ -11,6 +12,16 @@ app = Flask(__name__)
 CORS(app)
 ca = certifi.where()
 client = pymongo.MongoClient("mongodb+srv://Cluster73324:qpwoeiruty@cluster73324.dsnxfd1.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=ca)
+=======
+import pymongo
+import json
+import sys
+from bson.json_util import dumps, loads
+
+app = Flask(__name__)
+
+client = pymongo.MongoClient("mongodb+srv://Cluster73324:qpwoeiruty@cluster73324.dsnxfd1.mongodb.net/?retryWrites=true&w=majority")
+>>>>>>> c2be04b (update mongo)
 try:
     client.server_info()
 except pymongo.errors.OperationFailure as err:
@@ -107,6 +118,12 @@ def getFlatByFilter():
         pipeline[0]["$match"]["room_type"] = flat_type
     elif region:
         pipeline[0]["$match"]["town"] = region
+<<<<<<< HEAD
+=======
+    pipeline.append(
+        {"$sort": {"price":1}}
+    )
+>>>>>>> c2be04b (update mongo)
     pipeline.append({
             "$project":{    
                 "_id":0,
@@ -114,10 +131,81 @@ def getFlatByFilter():
                 "quarter":0,
                 "median_rent": 0,
             }
+<<<<<<< HEAD
         })
     queryStatement = col.aggregate(pipeline)
     
     return list(queryStatement), 200, {'ContentType': 'application/json'}
+=======
+        }
+        )
+    
+    print(pipeline)
+    queryStatement = col.aggregate(pipeline)
+    
+    return dumps(list(queryStatement)), 200, {'ContentType': 'application/json'}
+
+@app.route('/flat/all/getFlatsByFilterSort' , methods = ['GET'])
+def getFlatsByFilterSort():
+    region = request.args.get("region")
+    if region is None:
+        pipeline = [
+        {
+            "$match":{
+                "$and":[
+                {
+                    "RS_ID":{
+                        "$ne": None
+                }},
+                {
+                    "price":{
+                        "$ne": None
+                }},
+                ],
+            }},
+            ]
+    else:
+        pipeline = [
+        {
+            "$match":{
+            }},
+            ]
+    if region:
+        pipeline = [
+        {
+            "$match":{
+                "$and":[
+                {
+                    "RS_ID":{
+                        "$ne": None
+                }},
+                {
+                    "price":{
+                        "$ne": None
+                }},{
+                    "town":region
+                }
+                ],
+            }},
+            ]
+    pipeline.append(
+        {"$sort": {"price":1}}
+    )
+    pipeline.append({
+            "$project":{    
+                "_id":0,
+                "year":0,
+                "quarter":0,
+                "median_rent": 0,
+            }
+        }
+        )
+    
+    print(pipeline)
+    queryStatement = col.aggregate(pipeline)
+    return dumps(list(queryStatement)), 200, {'ContentType': 'application/json'}
+
+>>>>>>> c2be04b (update mongo)
 
 # Get HDB rental price by ID
 @app.route('/flat/filter/getFlatRental' , methods = ['GET'])
@@ -208,10 +296,18 @@ def getFlatPrice():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+<<<<<<< HEAD
 @app.route('/pmi/all/getPropertyType' , methods = ['GET'])
 def getPropertyType():  
     queryStatement = col.aggregate([{"$group": {
             "_id": "$propertyType"}},{"$sort":{"_id":1}}])
+=======
+
+@app.route('/pmi/all/getPropertyType' , methods = ['GET'])
+def getPropertyType():  
+    queryStatement = col.aggregate([{"$group": {
+            "_id": "$propertyType"}}])
+>>>>>>> c2be04b (update mongo)
     return list(queryStatement) 
 
 @app.route('/pmi/all/getStreets' , methods = ['GET'])
@@ -230,6 +326,10 @@ def getProjects():
         ])
     return list(queryStatement)
 
+<<<<<<< HEAD
+=======
+# compare the performance for this query
+>>>>>>> c2be04b (update mongo)
 @app.route('/pmi/all/getPMIByFilter' , methods = ['GET'])
 def getPMIByFilter():
     property_type = request.args.get('property_type') #propertyTypeID
@@ -287,6 +387,10 @@ def getPMIByFilter():
     
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
+<<<<<<< HEAD
+=======
+    
+>>>>>>> c2be04b (update mongo)
 
 
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
@@ -474,5 +578,40 @@ def getBookmark():
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
 
+<<<<<<< HEAD
 if __name__ == '__main__':
     app.run(debug=1, port=5001)
+=======
+
+@app.route('/pmi/filter/getPMISalesAveragePrice' , methods = ['GET'])
+def getPMISalesAveragePrice():
+    region = request.args.get('region')
+    pipeline = [
+    {
+    "$match":{
+        "RS_ID":{
+            "$ne": "null"
+        },
+    }
+    },
+    {
+        "$group":{
+            "_id":{
+                "town": "$town",
+                "averagePrice" :{"$avg": "$price"}
+            # "RS_ID":{
+            #     "$avg": "price"
+            # }
+            },
+        }
+    },
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
+
+        
+
+if __name__ == '__main__':
+    app.run(debug=1)
+    
+>>>>>>> c2be04b (update mongo)
