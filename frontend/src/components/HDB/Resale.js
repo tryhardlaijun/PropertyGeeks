@@ -196,6 +196,21 @@ function Resale() {
 		);
 	}
 
+	function displayAvg(){
+		var totalPrice = 0
+		if(rental){
+		for (let item in flatPrice){
+			totalPrice += flatPrice[item].median_rent
+			console.log(flatPrice[item].median_rent);
+		}}else{
+			for (let item in flatPrice){
+				totalPrice += flatPrice[item].price
+				console.log(flatPrice[item].price);
+			}
+		}
+		return totalPrice/flatPrice.length
+	}
+
 	async function Addmark() {
 		if(!userToken){
 			window.alert("Sign in First")
@@ -271,6 +286,7 @@ function Resale() {
 	return (
 		<div className="container mt-3">
 			{displayHeader()}
+			<h5>Average Price: {displayAvg()}</h5>
 			<div className="row">
 				<div className="col-4 border">{displayDetails()}</div>
 				<div className="col-8 border">{displayPrice()}</div>
