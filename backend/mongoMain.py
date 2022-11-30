@@ -107,6 +107,9 @@ def getFlatByFilter():
         pipeline[0]["$match"]["room_type"] = flat_type
     elif region:
         pipeline[0]["$match"]["town"] = region
+    pipeline.append(
+        {"$sort": {"price":1}}
+    )
     pipeline.append({
             "$project":{    
                 "_id":0,
@@ -114,10 +117,74 @@ def getFlatByFilter():
                 "quarter":0,
                 "median_rent": 0,
             }
-        })
+        }
+        )
+    
+    print(pipeline)
     queryStatement = col.aggregate(pipeline)
     
-    return list(queryStatement), 200, {'ContentType': 'application/json'}
+    return dumps(list(queryStatement)), 200, {'ContentType': 'application/json'}
+
+@app.route('/flat/all/getFlatsByFilterSort' , methods = ['GET'])
+def getFlatsByFilterSort():
+    region = request.args.get("region")
+    if region is None:
+        pipeline = [
+        {
+            "$match":{
+                "$and":[
+                {
+                    "RS_ID":{
+                        "$ne": None
+                }},
+                {
+                    "price":{
+                        "$ne": None
+                }},
+                ],
+            }},
+            ]
+    else:
+        pipeline = [
+        {
+            "$match":{
+            }},
+            ]
+    if region:
+        pipeline = [
+        {
+            "$match":{
+                "$and":[
+                {
+                    "RS_ID":{
+                        "$ne": None
+                }},
+                {
+                    "price":{
+                        "$ne": None
+                }},{
+                    "town":region
+                }
+                ],
+            }},
+            ]
+    pipeline.append(
+        {"$sort": {"price":1}}
+    )
+    pipeline.append({
+            "$project":{    
+                "_id":0,
+                "year":0,
+                "quarter":0,
+                "median_rent": 0,
+            }
+        }
+        )
+    
+    print(pipeline)
+    queryStatement = col.aggregate(pipeline)
+    return dumps(list(queryStatement)), 200, {'ContentType': 'application/json'}
+
 
 # Get HDB rental price by ID
 @app.route('/flat/filter/getFlatRental' , methods = ['GET'])
@@ -230,6 +297,7 @@ def getProjects():
         ])
     return list(queryStatement)
 
+# compare the performance for this query
 @app.route('/pmi/all/getPMIByFilter' , methods = ['GET'])
 def getPMIByFilter():
     property_type = request.args.get('property_type') #propertyTypeID
@@ -473,6 +541,34 @@ def getBookmark():
     ]
     queryStatement = col.aggregate(pipeline)
     return list(queryStatement), 200, {'ContentType': 'application/json'}
+
+
+@app.route('/pmi/filter/getPMISalesAveragePrice' , methods = ['GET'])
+def getPMISalesAveragePrice():
+    region = request.args.get('region')
+    pipeline = [
+    {
+    "$match":{
+        "RS_ID":{
+            "$ne": "null"
+        },
+    }
+    },
+    {
+        "$group":{
+            "_id":{
+                "town": "$town",
+                "averagePrice" :{"$avg": "$price"}
+            # "RS_ID":{
+            #     "$avg": "price"
+            # }
+            },
+        }
+    },
+    ]
+    queryStatement = col.aggregate(pipeline)
+    return list(queryStatement), 200, {'ContentType': 'application/json'}
+
         
 @app.route('/pmi/all/getStreets' , methods = ['GET'])
 def getStreets():  
