@@ -18,7 +18,8 @@ CREATE TABLE Quarter(
 	QuarterID INT NOT NULL AUTO_INCREMENT,
     year CHAR(4) NOT NULL, 
     quarter CHAR(2) NOT NULL,
-    PRIMARY KEY (QuarterID)
+    PRIMARY KEY (QuarterID),
+    CHECK (quarter = 'Q1' OR quarter = 'Q2' OR quarter = 'Q3' OR quarter = 'Q4')
 );
 DESCRIBE Quarter;
 
