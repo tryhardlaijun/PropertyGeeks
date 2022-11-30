@@ -66,6 +66,7 @@ function Bookmark() {
 		var bodyFormData = new FormData();
 		bodyFormData.append("UserID", 3);
 		if(!userToken){
+			window.alert("Please Login")
 			navigate("/")
 		}
 		let URI = "http://127.0.0.1:5000/view/getBookmark";

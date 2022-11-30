@@ -172,12 +172,12 @@ function PMI() {
 					</select>
 				</div>
 				<div className="col">
-					<button
+				<button
 						onClick={() => {
 							handleOnClick();
 						}}
-					>
-						Click me
+						className="updatebuttonLong me-1">
+						<b>Filter</b>
 					</button>
 				</div>
 			</div>

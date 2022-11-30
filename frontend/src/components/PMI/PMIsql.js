@@ -115,7 +115,7 @@ function PMISQL() {
 				<div className="col">
 					<label className= "mx-1" htmlFor="project">
 						Project:
-					<input type="text" id="project" value={filter.town} onChange={(e) =>
+					<input type="text" placeholder="Project Name" id="project" value={filter.town} onChange={(e) =>
 							handleOnchange({ town: e.target.value })
 						}>
 					</input>
@@ -139,8 +139,8 @@ function PMISQL() {
 						onClick={() => {
 							handleOnClick();
 						}}
-					>
-						Click me
+						className="updatebuttonLong me-1">
+						<b>Filter</b>
 					</button>
 				</div>
 			</div>

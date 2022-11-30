@@ -8,7 +8,10 @@ function Navbar() {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
 			<div className="container-fluid">
-					<BusinessOutlinedIcon color="success" />
+				<Link to={"/"}>
+				<BusinessOutlinedIcon color="success" />
+				</Link>
+					
 				<button
 					className="navbar-toggler"
 					type="button"
