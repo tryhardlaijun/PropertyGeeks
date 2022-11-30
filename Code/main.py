@@ -514,7 +514,7 @@ def loginAPI():
             if check_password_hash(password,pwd):
                 session['username'] = username
                 # cur.close()
-                return jsonify({"message":"Login successfully", "token":"token123"})
+                return jsonify({"message":"Login successfully", "token":row[0]})
             else:
                 resp = jsonify({'message':'Bad request - invalid credentials'})
                 resp.status_code = 400

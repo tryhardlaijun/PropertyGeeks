@@ -29,8 +29,8 @@ export default function Login({ setToken , isLoggedIn}) {
 		console.log(token);
 		if(token){
 			setToken(token);
+			navigate("/")
 		}
-		
 	};
 	function updateForm(value) {
 		return setForm((prev) => {
@@ -39,10 +39,12 @@ export default function Login({ setToken , isLoggedIn}) {
 		});
 	}
 	useEffect(() => {
-		if(isLoggedIn){
+		const tokenString = localStorage.getItem('token');
+		const userToken = JSON.parse(tokenString);
+		if(userToken){
 			navigate("/")
 		}
-	}, [isLoggedIn])
+	})
 	
 	return (
 		<>

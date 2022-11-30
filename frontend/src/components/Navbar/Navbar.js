@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -24,18 +24,28 @@ function Navbar() {
 					<ul className="navbar-nav me-auto mb-2 mb-lg-0">
 						<li className="nav-item">
 							<Link to={"/HDB"} className="nav-link">
-								HDB
+								HDB(SQL)
 							</Link>
 						</li>
 						<li className="nav-item">
 							<Link to={"/PMI"} className="nav-link">
-								Private Properties
+								Private Properties(SQL)
+							</Link>
+						</li>
+						<li className="nav-item">
+							<Link to={"/HDBNOSQL"} className="nav-link">
+							HDB(NOSQL)
+							</Link>
+						</li>
+						<li className="nav-item">
+							<Link to={"/PMINOSQL"} className="nav-link">
+								Private Properties(NOSQL)
 							</Link>
 						</li>
 					</ul>
 					<ul className="nav navbar-nav ms-auto justify-content-end">
 						<li className="nav-item">
-							<Link to={"/bookmarks"} className="nav-link">
+							<Link to={"/profile"} className="nav-link">
 								<BookmarkIcon />
 							</Link>
 						</li>

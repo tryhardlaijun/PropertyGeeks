@@ -149,7 +149,7 @@ function HDBNOSQL() {
 
 	return (
 		<div className="container mt-3">
-			<h2>HDB</h2>
+			<h2>HDB(NOSQL)</h2>
 			<div className="row">
 				<div className="col">
 					<select

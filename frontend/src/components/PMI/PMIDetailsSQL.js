@@ -16,10 +16,13 @@ function PMIDetailsSQL() {
 	const [flatDetails, setFlatDetails] = useState({});
 	const [flatPrice, setFlatPrice] = useState([]);
 	const [rental, setRental] = useState(false);
+	const tokenString = localStorage.getItem('token');
+    const userToken = JSON.parse(tokenString);
+	console.log(userToken);
 	useEffect(() => {
 		async function getFlatDetail() {
 			const response = await axios(
-				`http://127.0.0.1:5000/pmi/filter/getPMISalesPrice?pmi_id=${params.id}`
+				`http://127.0.0.1:5000/pmi/filter/getPMIByID?pmi_id=${params.id}`
 			);
 			const details = await response.data.Results;
 			setFlatDetails(details);
@@ -94,11 +97,35 @@ function PMIDetailsSQL() {
 		);
 	}
 
+    async function Addmark() {
+		if(!userToken){
+			window.alert("Sign in First")
+			return
+		}
+		var bodyFormData = new FormData();
+		bodyFormData.append("UserID", userToken);
+		bodyFormData.append("PMI_ID", params.id);
+		let URI = "http://127.0.0.1:5000/view/addBookmark";
+        try {
+            const response = await axios({
+                method: "post",
+                url: URI,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            console.log(response.data);
+        } catch (error) {
+            const message = `An error occurred: ${error}`;
+            console.log(message);
+            return;
+        }
+    }
+
 	function displayDetails() {
 		return (
 			<div className="card">
 				<div className="card-header">
-					<h4 className="text-center headingFont">House</h4>
+					<h4 className="text-center headingFont">House Deatils</h4>
 				</div>
 				<div className="card-body">
 					<table class="table table-striped text-center">
@@ -106,50 +133,24 @@ function PMIDetailsSQL() {
 							<tr>
 								<td>
 									<p className="bodyText">
-										<b>Block</b>
+										<b>Project</b>
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										<b>Town</b>
-									</p>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<p className="bodyText">
-										{flatDetails.block}
-									</p>
-								</td>
-								<td>
-									<p className="bodyText">
-										{flatDetails.town}
-									</p>
-								</td>
-							</tr>
-						</tbody>
-						<tbody>
-							<tr>
-								<td>
-									<p className="bodyText">
-										<b>Year of Lease Start</b>
-									</p>
-								</td>
-								<td>
-									<p className="bodyText">
-										<b>Room Type</b>
+										<b>Streetname</b>
 									</p>
 								</td>
 							</tr>
 							<tr>
 								<td>
 									<p className="bodyText">
-										{flatDetails.lease_commence_date}
+										{flatDetails.project}
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										{flatDetails.room_type}
+										{flatDetails.street}
 									</p>
 								</td>
 							</tr>
@@ -158,35 +159,49 @@ function PMIDetailsSQL() {
 							<tr>
 								<td>
 									<p className="bodyText">
-										<b>Size</b>
+										<b>Area Type</b>
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										<b>Model</b>
+										<b>Tenure</b>
 									</p>
 								</td>
 							</tr>
 							<tr>
 								<td>
 									<p className="bodyText">
-										{flatDetails.floor_area_sqm} sqm
+									{flatDetails.typeOfArea}
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										{flatDetails.model}
+										{flatDetails.tenure}
+									</p>
+								</td>
+							</tr>
+						</tbody>
+						<tbody>
+							<tr>
+								<td>
+									<p className="bodyText">
+										<b>Property Type</b>
+									</p>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<p className="bodyText">
+										{flatDetails.propertyType}
 									</p>
 								</td>
 							</tr>
 						</tbody>
 					</table>
-					<button type="button" className="updatebuttonLong me-1">
-						<Link
-							style={{ textDecoration: "none", color: "black" }}
-						>
+					<button type="button" className="updatebuttonLong me-1" onClick={Addmark}>
+						
 							Add to Bookmark <BookmarkIcon />
-						</Link>
+						
 					</button>
 				</div>
 			</div>

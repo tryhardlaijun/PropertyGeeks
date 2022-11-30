@@ -110,7 +110,7 @@ function PMISQL() {
 
 	return (
 		<div className="container mt-3">
-			<h2>PMI</h2>
+			<h2>PMI(SQL)</h2>
 			<div className="row">
 				<div className="col">
 					<label className= "mx-1" htmlFor="project">

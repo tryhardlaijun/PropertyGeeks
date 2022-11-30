@@ -99,9 +99,6 @@ function HDB() {
 		if (filter.town === null && filter.type === null) {
 			getTypes().then(() =>
 				getRegion().then(() => {
-					getRecords().catch((error)=>{
-						console.log(error);
-					});
 				})
 				.catch((error)=>{
 					console.log(error);
@@ -143,7 +140,7 @@ function HDB() {
 
 	return (
 		<div className="container mt-3">
-			<h2>HDB</h2>
+			<h2>HDB(SQL)</h2>
 			<div className="row">
 				<div className="col">
 					<select

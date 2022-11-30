@@ -1,14 +1,15 @@
 import { React, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 function UpdateBM(){
 	const [newDesc, setNewDesc] = useState("")
     const params = useParams();
 	console.log(params);
+    var navigate = useNavigate()
     var bodyFormData = new FormData();
 	bodyFormData.append("UserID", params.uid);
-    bodyFormData.append("bookmark_id", 1);
+    bodyFormData.append("bookmark_id", params.bid);
     let URI = "http://127.0.0.1:5000/view/updateBookmark";
     async function updatemark() {
         try {
@@ -26,13 +27,18 @@ function UpdateBM(){
             return;
         }
     }
+    function handleBtn(){
+        updatemark().then(()=>{
+            navigate("/profile")
+        })
+    }
     return (
-		<div>
+		<div className="container">
             <label>Description: </label>
             <input type="text" value= {newDesc} onChange={(e)=>{setNewDesc(e.target.value)}}>
 
             </input>
-            <button onClick={updatemark}>
+            <button onClick={handleBtn}>
                 Update This
             </button>
 		</div>

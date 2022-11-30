@@ -19,6 +19,7 @@ import SaleNoSql from "./components/HDB/SaleNoSQL";
 import RentNoSql from "./components/HDB/RentalNoSQL";
 import Bookmark from "./components/Login/Profile";
 import UpdateBM from "./components/Login/UpdateBM";
+import DelBM from "./components/Login/DelBM";
 
 
 function App() {
@@ -42,8 +43,8 @@ function App() {
 					<Route path="/resale/:id" element={<Resale />} />
 					<Route path="/HDBNOSQLSale/:id" element={<SaleNoSql />} />
 					<Route path="/HDBNOSQLRent/:id" element={<RentNoSql />} />
-					<Route path="/PMI" element={<PMI />} />
-					<Route path="/PMISQL" element={<PMISQL />} />
+					<Route path="/PMI" element={<PMISQL />} />
+					<Route path="/PMINOSQL" element={<PMI />} />
 					<Route path="/pmisaleSQl/:id" element={<PMIDetailsSQL />} />
 					<Route path="/pmirental/:id" element={<PMIrent />} />
 					<Route path="/pmisale/:id" element={<PMIsale />} />
@@ -52,6 +53,7 @@ function App() {
 					<Route path="/updateBM/:bid/:uid" element={<UpdateBM />} />
 					<Route path="/logout" element={<Logout isLoggedIn = {isLoggedIn()}/>} />
 					<Route path="/signup" element={<SignupPage />} />
+					<Route path="/delBM/:bid/:uid" element={<DelBM />} />
 				</Routes>
 			</BrowserRouter>
 		</>

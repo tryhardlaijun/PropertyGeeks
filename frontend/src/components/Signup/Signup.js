@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+	var navigate = useNavigate()
 	const [form, setForm] = useState({
 		email: "",
 		password: "",
@@ -27,6 +28,7 @@ function Signup() {
 			body:JSON.stringify(newPerson)
 		}).then((res)=>{
 			console.log(res);
+			navigate("/login")
 		})
 		.catch(error => {
 			window.alert(error);
@@ -40,7 +42,7 @@ function Signup() {
 			<div className="card">
 				<div className="card-header text-center">Sign Up</div>
 				<div className="card-body">
-					<form onSubmit={onSubmit}>
+					
 					<div className="mb-3">
 						<label
 							htmlFor="exampleFormControlInput1"
@@ -116,8 +118,8 @@ function Signup() {
 							onChange={(e)=>{updateForm({phoneNumber:e.target.value})}}
 						/>
 					</div>
-					<button className="updatebuttonLong" type="submit">Sign Up</button>
-					</form>
+					<button className="updatebuttonLong" type="submit" onClick={onSubmit}>Sign Up</button>
+					
 				</div>
 			</div>
 		</div>

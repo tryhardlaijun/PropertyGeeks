@@ -16,6 +16,9 @@ function Resale() {
 	const [flatDetails, setFlatDetails] = useState({});
 	const [flatPrice, setFlatPrice] = useState([]);
 	const [rental, setRental] = useState(false);
+	const tokenString = localStorage.getItem('token');
+    const userToken = JSON.parse(tokenString);
+	console.log(userToken);
 	useEffect(() => {
 		async function getFlatDetail() {
 			const response = await axios(
@@ -181,7 +184,7 @@ function Resale() {
 							</tr>
 						</tbody>
 					</table>
-					<button type="button" className="updatebuttonLong me-1">
+					<button type="button" className="updatebuttonLong me-1" onClick={Addmark}>
 						<Link
 							style={{ textDecoration: "none", color: "black" }}
 						>
@@ -192,6 +195,30 @@ function Resale() {
 			</div>
 		);
 	}
+
+	async function Addmark() {
+		if(!userToken){
+			window.alert("Sign in First")
+			return
+		}
+		var bodyFormData = new FormData();
+		bodyFormData.append("UserID", userToken);
+		bodyFormData.append("FD_ID", params.id);
+		let URI = "http://127.0.0.1:5000/view/addBookmark";
+        try {
+            const response = await axios({
+                method: "post",
+                url: URI,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            console.log(response.data);
+        } catch (error) {
+            const message = `An error occurred: ${error}`;
+            console.log(message);
+            return;
+        }
+    }
 
 	function displayPrice() {
 		return (

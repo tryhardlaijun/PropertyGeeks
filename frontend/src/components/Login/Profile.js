@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -44,17 +44,33 @@ const Record = (props) => (
 						Update this
 					</Link>
 			</button>
+			<button type="button" className="updatebutton me-1">
+			<Link
+						to={`/delBM/${props.record.BookmarkID}/${props.uid}`}
+						style={{ textDecoration: "none", color: "black" }}
+					>
+						Delete
+					</Link>
+			</button>
 		</TableCell>
 	</TableRow>
 );
 
 function Bookmark() {
-	var bodyFormData = new FormData();
-	bodyFormData.append("UserID", 3);
+	const navigate = useNavigate();
 	const [bookmarks, setBookMarks] = useState([]);
 	useEffect(() => {
+		const tokenString = localStorage.getItem('token');
+		const userToken = JSON.parse(tokenString);
+		console.log(userToken);
+		var bodyFormData = new FormData();
+		bodyFormData.append("UserID", 3);
+		if(!userToken){
+			navigate("/")
+		}
 		let URI = "http://127.0.0.1:5000/view/getBookmark";
 		async function getRecords() {
+			console.log(bodyFormData)
 			try {
 				const response = await axios({
 					method: "post",
@@ -70,7 +86,11 @@ function Bookmark() {
 				return;
 			}
 		}
-		getRecords();
+		getRecords().then(()=>{
+			console.log("done");
+		}).catch((error)=>{
+			console.log(error);
+		});
 		return;
 	}, []);
 
@@ -81,7 +101,7 @@ function Bookmark() {
 	}
 	return (
 		<div className="container mt-3">
-			<h2>HDB</h2>
+			<h2>Bookmarks</h2>
 			<TableContainer component={Paper}>
 				<Table
 					sx={{ minWidth: 300 }}
