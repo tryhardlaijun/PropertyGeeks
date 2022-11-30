@@ -211,7 +211,7 @@ def getFlatPrice():
 @app.route('/pmi/all/getPropertyType' , methods = ['GET'])
 def getPropertyType():  
     queryStatement = col.aggregate([{"$group": {
-            "_id": "$propertyType"}}])
+            "_id": "$propertyType"}},{"$sort":{"_id":1}}])
     return list(queryStatement) 
 
 @app.route('/pmi/all/getStreets' , methods = ['GET'])
@@ -467,64 +467,6 @@ def getBookmark():
     },
     {
         "$project":{    
-            "_id":0,
-        }
-    }
-    ]
-    queryStatement = col.aggregate(pipeline)
-    return list(queryStatement), 200, {'ContentType': 'application/json'}
-        
-@app.route('/pmi/all/getStreets' , methods = ['GET'])
-def getStreets():  
-    queryStatement = col.aggregate([
-        {"$group": {
-            "_id": "$street"}}
-        ])
-    return list(queryStatement)
-
-@app.route('/pmi/all/getProjects' , methods = ['GET'])
-def getProjects():  
-    queryStatement = col.aggregate([
-        {"$group": {
-            "_id": "$project"}}
-        ])
-    return list(queryStatement)
-
-@app.route('/pmi/filter/getPMIRentalDetails' , methods = ['GET'])
-def getPMIRentalDetails():
-    pmi_id = request.args.get('pmi_id')
-    pipeline = [
-    {
-        "$match":{
-            "PRENT_ID":{
-                "$exists": "true"
-            },
-            "PRENT_ID" : pmi_id
-        }
-    },
-    {
-        "$project":{
-            "_id":0,
-        }
-    }
-    ]
-    queryStatement = col.aggregate(pipeline)
-    return list(queryStatement), 200, {'ContentType': 'application/json'}
-
-@app.route('/pmi/filter/getPMISalesDetails' , methods = ['GET'])
-def getPMISalesDetails():
-    pmi_id = request.args.get('pmi_id')
-    pipeline = [
-    {
-        "$match":{
-            "PSALE_ID":{
-                "$exists": "true"
-            },
-            "PSALE_ID" : pmi_id
-        }
-    },
-    {
-        "$project":{
             "_id":0,
         }
     }

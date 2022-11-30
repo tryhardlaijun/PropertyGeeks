@@ -48,3 +48,30 @@ code {
   padding-left: 14px;
   padding-right: 14px;
 }
+
+.popup-container {
+  z-index:99;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.popup {
+  z-index:99;
+  background: #FFFFFF;
+  border-radius: 6px;
+  box-shadow: 0 15px 10px 3px rgba(181, 179, 179, 0.1);
+  border-color: E8E8E8;
+  padding: 15px;
+  text-align: left;
+  width:90%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  
+}

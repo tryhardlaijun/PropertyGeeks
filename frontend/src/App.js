@@ -12,6 +12,14 @@ import PMI from "./components/PMI/PMI";
 import PMIrent from "./components/PMI/PMIrental";
 import PMIsale from "./components/PMI/PMIsale";
 import SignupPage from "./components/Signup/Signup";
+import PMISQL from "./components/PMI/PMIsql";
+import PMIDetailsSQL from "./components/PMI/PMIDetailsSQL";
+import HDBNOSQL from "./components/HDB/HDBNOSQL";
+import SaleNoSql from "./components/HDB/SaleNoSQL";
+import RentNoSql from "./components/HDB/RentalNoSQL";
+import Bookmark from "./components/Login/Profile";
+import UpdateBM from "./components/Login/UpdateBM";
+
 
 function App() {
 	const { token, setToken } = useToken();
@@ -30,13 +38,19 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/HDB" element={<HDB />} />
-					<Route path="/PMI" element={<PMI />} />
-					<Route path="/login" element={<Login setToken={setToken} isLoggedIn = {isLoggedIn()}/>} />
-					<Route path="/profile" element={<Dashboard />} />
-					<Route path="/logout" element={<Logout />} />
+					<Route path="/HDBNOSQL" element={<HDBNOSQL />} />
 					<Route path="/resale/:id" element={<Resale />} />
+					<Route path="/HDBNOSQLSale/:id" element={<SaleNoSql />} />
+					<Route path="/HDBNOSQLRent/:id" element={<RentNoSql />} />
+					<Route path="/PMI" element={<PMI />} />
+					<Route path="/PMISQL" element={<PMISQL />} />
+					<Route path="/pmisaleSQl/:id" element={<PMIDetailsSQL />} />
 					<Route path="/pmirental/:id" element={<PMIrent />} />
 					<Route path="/pmisale/:id" element={<PMIsale />} />
+					<Route path="/login" element={<Login setToken={setToken} isLoggedIn = {isLoggedIn()}/>} />
+					<Route path="/profile" element={<Bookmark />} />
+					<Route path="/updateBM/:bid/:uid" element={<UpdateBM />} />
+					<Route path="/logout" element={<Logout isLoggedIn = {isLoggedIn()}/>} />
 					<Route path="/signup" element={<SignupPage />} />
 				</Routes>
 			</BrowserRouter>

@@ -6,9 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import sys
 
+app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = '12345'
-app = Flask(__name__)
 limit = 10000
 try:
     conn = mysql.connector.connect(user='root', password='admin',
@@ -440,7 +440,6 @@ def deleteBookmark():
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
 
-
 @app.route('/view/updateBookmark', methods = ['POST'])
 def updateBookmark():
     response_code = 400
@@ -546,4 +545,3 @@ def registerAPI():
         resp = jsonify({'message':'Bad request - Fields incomplete'})
         resp.status_code  = 400
         return resp
-

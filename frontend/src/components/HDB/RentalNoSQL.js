@@ -10,61 +10,37 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-function Resale() {
+function RentalNoSQL() {
 	const params = useParams();
 	console.log(params.id);
-	const [flatDetails, setFlatDetails] = useState({});
-	const [flatPrice, setFlatPrice] = useState([]);
-	const [rental, setRental] = useState(false);
+	const [houseDetails, setHouseDetails] = useState({});
+	const [housePrice, setHousePrice] = useState([])
 	useEffect(() => {
+		async function getSalePrice() {
+			const response = await axios(
+				`http://127.0.0.1:5001/flat/filter/getFlatRental?rent_id=${params.id}`
+			);
+			const price = await response.data;
+			console.log(price);
+			setHousePrice(price);
+			setHouseDetails(price[0])
+			console.log(houseDetails);
+			return;
+		}
 		async function getFlatDetail() {
 			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatDetails?fd_id=${params.id}`
+				`http://127.0.0.1:5001/flat/filter/getRentFlatDetails?rent_id=${params.id}`
 			);
-			const details = await response.data.Results;
-			setFlatDetails(details);
-			console.log(details);
-			return;
-		}
-		async function getFlatPrice() {
-			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatPrice?fd_id=${params.id}`
-			);
-			const price = await response.data.Results;
+			const price = await response.data;
 			console.log(price);
-			setFlatPrice(price);
+			setHousePrice(price);
+			setHouseDetails(price[0])
 			return;
 		}
-		async function getRentalPrice() {
-			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatRental?fd_id=${params.id}`
-			);
-			const price = await response.data.Results;
-			console.log(price);
-			setFlatPrice(price);
-			return;
-		}
-		getFlatDetail().then(() => {
-			if(rental){
-				getRentalPrice().then(() => {
-					console.log("done");
-				})
-				.catch((error)=>{
-					console.log(error);
-				})
-			}else{
-			getFlatPrice().then(() => {
-				console.log("done");
-			})
-			.catch((error)=>{
-				console.log(error);
-			});
-		}
+		getSalePrice().then(()=>{
+			getFlatDetail()
 		})
-		.catch((error)=>{
-			console.log(error);
-		});
-	}, [rental, params.id]);
+	}, []);
 
 	const Record = (props) => (
 		<TableRow>
@@ -75,13 +51,13 @@ function Resale() {
 				<p className="bodyText">{props.record.year}</p>
 			</TableCell>
 			<TableCell align="center">
-				<p className="bodyText">${rental?props.record.median_rent:props.record.price}</p>
+				<p className="bodyText">${props.record.median_rent}</p>
 			</TableCell>
 		</TableRow>
 	);
 
 	function recordList() {
-		return flatPrice.map((record, index) => {
+		return housePrice.map((record, index) => {
 			return <Record record={record} key={index} />;
 		});
 	}
@@ -89,7 +65,7 @@ function Resale() {
 	function displayHeader() {
 		return (
 			<h1 className="headingFont">
-				Block {flatDetails.block} {flatDetails.town}
+				Block {houseDetails.block} {houseDetails.town}
 			</h1>
 		);
 	}
@@ -118,12 +94,12 @@ function Resale() {
 							<tr>
 								<td>
 									<p className="bodyText">
-										{flatDetails.block}
+										{houseDetails.block}
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										{flatDetails.town}
+										{houseDetails.town}
 									</p>
 								</td>
 							</tr>
@@ -144,12 +120,12 @@ function Resale() {
 							<tr>
 								<td>
 									<p className="bodyText">
-										{flatDetails.lease_commence_date}
+										{houseDetails.lease_commence_date}
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										{flatDetails.room_type}
+										{houseDetails.room_type}
 									</p>
 								</td>
 							</tr>
@@ -170,12 +146,12 @@ function Resale() {
 							<tr>
 								<td>
 									<p className="bodyText">
-										{flatDetails.floor_area_sqm} sqm
+										{houseDetails.floor_area_sqm} sqm
 									</p>
 								</td>
 								<td>
 									<p className="bodyText">
-										{flatDetails.model}
+										{houseDetails.model}
 									</p>
 								</td>
 							</tr>
@@ -197,21 +173,7 @@ function Resale() {
 		return (
 			<div className="card">
 				<div className="card-header">
-					<h4 className="text-center headingFont">{rental?"Rental":"Resale"} Price History</h4>
-					<div class="form-check form-switch">
-						<input
-							class="form-check-input"
-							type="checkbox"
-							id="flexSwitchCheckDefault"
-							onChange={(e)=>{setRental(e.target.checked)}}
-						></input>
-						<label
-							class="form-check-label"
-							for="flexSwitchCheckDefault"
-						>
-							Rental Pricing
-						</label>
-					</div>
+					<h4 className="text-center headingFont">Resale Price History</h4>
 				</div>
 				<div className="card-body">
 					<TableContainer component={Paper}>
@@ -251,4 +213,4 @@ function Resale() {
 		</div>
 	);
 }
-export default Resale;
+export default RentalNoSQL;

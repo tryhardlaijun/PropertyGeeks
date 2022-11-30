@@ -16,19 +16,28 @@ const Record = (props) => (
 		<TableCell align="center">{props.record.room_type}</TableCell>
 		<TableCell align="center">{props.record.floor_area_sqm}</TableCell>
 		<TableCell align="center">
+			{props.record.PRENT_ID ? "Rental" : "Sale"}
+		</TableCell>
+		<TableCell align="center">
 			<button type="button" className="updatebutton me-1">
-				<Link
-					to={`/resale/${props.record.FD_ID}`}
-					style={{ textDecoration: "none", color: "black" }}
-				>
-					View
-				</Link>
+				{props.record.RT_ID ? (
+					<Link to={`/HDBNOSQLRent/${props.record.RT_ID}`} style={{ textDecoration: "none", color: "black" }}>
+						View
+					</Link>
+				) : (
+                    <Link
+                    to={`/HDBNOSQLSale/${props.record.RS_ID}`}
+                    style={{ textDecoration: "none", color: "black" }}
+                >
+                    View
+                </Link>
+				)}
 			</button>
 		</TableCell>
 	</TableRow>
 );
 
-function HDB() {
+function HDBNOSQL() {
 	const [HDBFlats, setHDBFlats] = useState([]);
 	const [filter, setFilters] = useState({
 		town: null,
@@ -45,22 +54,22 @@ function HDB() {
 	}
 
 	useEffect(() => {
-		let URI = "http://127.0.0.1:5000/flat/all/getFlatsByFilter?";
+		let URI = "http://127.0.0.1:5001/flat/all/getFlatsByFilter?";
 		if (filter.town != null && filter.type != null) {
-			URI = URI + `fid=${filter.type}&rid=${filter.town}`;
+			URI = URI + `flat_type=${filter.type}&region=${filter.town}`;
 			console.log(URI);
 		} else if (filter.town != null) {
-			URI = URI + `rid=${filter.town}`;
+			URI = URI + `region=${filter.town}`;
 			console.log(URI);
 		} else if (filter.type != null) {
-			URI = URI + `fid=${filter.type}`;
+			URI = URI + `flat_type=${filter.type}`;
 			console.log(URI);
 		}
 		async function getRecords() {
 			try {
 				const response = await axios(URI);
 				console.log(response.data);
-				const records = await response.data.Results;
+				const records = await response.data;
 				setHDBFlats(records);
 			} catch (error) {
 				const message = `An error occurred: ${error}`;
@@ -71,10 +80,10 @@ function HDB() {
 		async function getTypes() {
 			try {
 				const response = await axios(
-					"http://127.0.0.1:5000/flat/all/getFlatTypes"
+					"http://127.0.0.1:5001/flat/all/getFlatTypes"
 				);
 				console.log(response.data);
-				const records = await response.data.Results;
+				const records = await response.data;
 				setTypes(records);
 			} catch (error) {
 				const message = `An error occurred: ${error}`;
@@ -85,10 +94,10 @@ function HDB() {
 		async function getRegion() {
 			try {
 				const response = await axios(
-					"http://127.0.0.1:5000/flat/all/getRegion"
+					"http://127.0.0.1:5001/flat/all/getRegion"
 				);
 				console.log(response.data);
-				const records = await response.data.Results;
+				const records = await response.data;
 				setTowns(records);
 			} catch (error) {
 				const message = `An error occurred: ${error}`;
@@ -99,9 +108,6 @@ function HDB() {
 		if (filter.town === null && filter.type === null) {
 			getTypes().then(() =>
 				getRegion().then(() => {
-					getRecords().catch((error)=>{
-						console.log(error);
-					});
 				})
 				.catch((error)=>{
 					console.log(error);
@@ -124,8 +130,8 @@ function HDB() {
 	function townList() {
 		return towns.map((town, index) => {
 			return (
-				<option key={town.RID} value={town.RID}>
-					{town.town}
+				<option key={index} value={town._id}>
+					{town._id}
 				</option>
 			);
 		});
@@ -134,8 +140,8 @@ function HDB() {
 	function typeList() {
 		return types.map((type, index) => {
 			return (
-				<option key={type.FID} value={type.FID}>
-					{type.room_type}
+				<option key={index} value={type._id}>
+					{type._id}
 				</option>
 			);
 		});
@@ -193,6 +199,9 @@ function HDB() {
 								<b>Size (sqm)</b>
 							</TableCell>
 							<TableCell align="center">
+								<b>Rental/Sale</b>
+							</TableCell>
+							<TableCell align="center">
 								<b>Actions</b>
 							</TableCell>
 						</TableRow>
@@ -204,4 +213,4 @@ function HDB() {
 	);
 }
 
-export default HDB;
+export default HDBNOSQL;

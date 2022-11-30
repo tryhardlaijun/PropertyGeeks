@@ -10,7 +10,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-function Resale() {
+function PMIDetailsSQL() {
 	const params = useParams();
 	console.log(params.id);
 	const [flatDetails, setFlatDetails] = useState({});
@@ -19,7 +19,7 @@ function Resale() {
 	useEffect(() => {
 		async function getFlatDetail() {
 			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatDetails?fd_id=${params.id}`
+				`http://127.0.0.1:5000/pmi/filter/getPMISalesPrice?pmi_id=${params.id}`
 			);
 			const details = await response.data.Results;
 			setFlatDetails(details);
@@ -28,7 +28,7 @@ function Resale() {
 		}
 		async function getFlatPrice() {
 			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatPrice?fd_id=${params.id}`
+				`http://127.0.0.1:5000/pmi/filter/getPMISalesPrice?pmi_id=${params.id}`
 			);
 			const price = await response.data.Results;
 			console.log(price);
@@ -37,7 +37,7 @@ function Resale() {
 		}
 		async function getRentalPrice() {
 			const response = await axios(
-				`http://127.0.0.1:5000/flat/filter/getFlatRental?fd_id=${params.id}`
+				`http://127.0.0.1:5000/pmi/filter/getPMIRental?pmi_id=${params.id}`
 			);
 			const price = await response.data.Results;
 			console.log(price);
@@ -75,7 +75,7 @@ function Resale() {
 				<p className="bodyText">{props.record.year}</p>
 			</TableCell>
 			<TableCell align="center">
-				<p className="bodyText">${rental?props.record.median_rent:props.record.price}</p>
+				<p className="bodyText">${rental?props.record.rent_price:props.record.price}</p>
 			</TableCell>
 		</TableRow>
 	);
@@ -89,7 +89,7 @@ function Resale() {
 	function displayHeader() {
 		return (
 			<h1 className="headingFont">
-				Block {flatDetails.block} {flatDetails.town}
+				
 			</h1>
 		);
 	}
@@ -98,7 +98,7 @@ function Resale() {
 		return (
 			<div className="card">
 				<div className="card-header">
-					<h4 className="text-center headingFont">HDB Details</h4>
+					<h4 className="text-center headingFont">House</h4>
 				</div>
 				<div className="card-body">
 					<table class="table table-striped text-center">
@@ -251,4 +251,4 @@ function Resale() {
 		</div>
 	);
 }
-export default Resale;
+export default PMIDetailsSQL;

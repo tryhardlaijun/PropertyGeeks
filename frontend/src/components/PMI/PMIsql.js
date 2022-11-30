@@ -11,32 +11,32 @@ import Paper from "@mui/material/Paper";
 
 const Record = (props) => (
 	<TableRow>
-		<TableCell align="center">{props.record.town}</TableCell>
-		<TableCell align="center">{props.record.block}</TableCell>
-		<TableCell align="center">{props.record.room_type}</TableCell>
-		<TableCell align="center">{props.record.floor_area_sqm}</TableCell>
+		<TableCell align="center">{props.record.street}</TableCell>
+		<TableCell align="center">{props.record.project}</TableCell>
+		<TableCell align="center">{props.record.propertyType}</TableCell>
+		<TableCell align="center">
+			{props.record.PRENT_ID ? "Rental" : "Sale"}
+		</TableCell>
 		<TableCell align="center">
 			<button type="button" className="updatebutton me-1">
-				<Link
-					to={`/resale/${props.record.FD_ID}`}
-					style={{ textDecoration: "none", color: "black" }}
-				>
-					View
-				</Link>
+                    <Link
+                    to={`/pmisaleSQl/${props.record.PMI_ID}`}
+                    style={{ textDecoration: "none", color: "black" }}
+                >
+                    View
+                </Link>
 			</button>
 		</TableCell>
 	</TableRow>
 );
 
-function HDB() {
-	const [HDBFlats, setHDBFlats] = useState([]);
+function PMISQL() {
+	const [PMIHouse, setPMIHouse] = useState([]);
 	const [filter, setFilters] = useState({
-		town: null,
+		town: "",
 		type: null,
 	});
 	const [types, setTypes] = useState([]);
-	const [towns, setTowns] = useState([]);
-
 	function handleOnchange(value) {
 		console.log(value);
 		return setFilters((prev) => {
@@ -45,33 +45,10 @@ function HDB() {
 	}
 
 	useEffect(() => {
-		let URI = "http://127.0.0.1:5000/flat/all/getFlatsByFilter?";
-		if (filter.town != null && filter.type != null) {
-			URI = URI + `fid=${filter.type}&rid=${filter.town}`;
-			console.log(URI);
-		} else if (filter.town != null) {
-			URI = URI + `rid=${filter.town}`;
-			console.log(URI);
-		} else if (filter.type != null) {
-			URI = URI + `fid=${filter.type}`;
-			console.log(URI);
-		}
-		async function getRecords() {
-			try {
-				const response = await axios(URI);
-				console.log(response.data);
-				const records = await response.data.Results;
-				setHDBFlats(records);
-			} catch (error) {
-				const message = `An error occurred: ${error}`;
-				console.log(message);
-				return;
-			}
-		}
 		async function getTypes() {
 			try {
 				const response = await axios(
-					"http://127.0.0.1:5000/flat/all/getFlatTypes"
+					"http://127.0.0.1:5000/pmi/all/getPropertyType"	
 				);
 				console.log(response.data);
 				const records = await response.data.Results;
@@ -82,52 +59,42 @@ function HDB() {
 				return;
 			}
 		}
-		async function getRegion() {
+		
+		getTypes()
+
+		return;
+	}, []);
+
+	function handleOnClick() {
+		let URI = "http://127.0.0.1:5000/pmi/all/getPMIByFilter?";
+		if (filter.town != null && filter.type != null) {
+			URI = URI + `pid=${filter.type}&street=${filter.town}`;
+			console.log(URI);
+		} else if (filter.town != null) {
+			URI = URI + `street=${filter.town}`;
+			console.log(URI);
+		} else if (filter.type != null) {
+			URI = URI + `property_type=${filter.type}`;
+			console.log(URI);
+		}
+		async function getRecords() {
 			try {
-				const response = await axios(
-					"http://127.0.0.1:5000/flat/all/getRegion"
-				);
+				const response = await axios(URI);
 				console.log(response.data);
 				const records = await response.data.Results;
-				setTowns(records);
+				setPMIHouse(records);
 			} catch (error) {
 				const message = `An error occurred: ${error}`;
 				console.log(message);
 				return;
 			}
 		}
-		if (filter.town === null && filter.type === null) {
-			getTypes().then(() =>
-				getRegion().then(() => {
-					getRecords().catch((error)=>{
-						console.log(error);
-					});
-				})
-				.catch((error)=>{
-					console.log(error);
-				})
-			).catch((error)=>{
-				console.log(error);
-			});
-		} else {
-			getRecords();
-		}
-		return;
-	}, [filter.town, filter.type]);
-
-	function recordList() {
-		return HDBFlats.map((record, index) => {
-			return <Record record={record} key={index} />;
-		});
+		getRecords();
 	}
 
-	function townList() {
-		return towns.map((town, index) => {
-			return (
-				<option key={town.RID} value={town.RID}>
-					{town.town}
-				</option>
-			);
+	function recordList() {
+		return PMIHouse.map((record, index) => {
+			return <Record record={record} key={index} />;
 		});
 	}
 
@@ -143,20 +110,16 @@ function HDB() {
 
 	return (
 		<div className="container mt-3">
-			<h2>HDB</h2>
+			<h2>PMI</h2>
 			<div className="row">
 				<div className="col">
-					<select
-						class="form-control"
-						onChange={(e) =>
+					<label className= "mx-1" htmlFor="project">
+						Project:
+					<input type="text" id="project" value={filter.town} onChange={(e) =>
 							handleOnchange({ town: e.target.value })
-						}
-					>
-						<option selected="true" disabled="disabled">
-							Select Town
-						</option>
-						{townList()}
-					</select>
+						}>
+					</input>
+					</label>
 				</div>
 				<div className="col">
 					<select
@@ -171,6 +134,15 @@ function HDB() {
 						{typeList()}
 					</select>
 				</div>
+				<div className="col">
+					<button
+						onClick={() => {
+							handleOnClick();
+						}}
+					>
+						Click me
+					</button>
+				</div>
 			</div>
 			<TableContainer component={Paper}>
 				<Table
@@ -181,16 +153,16 @@ function HDB() {
 					<TableHead>
 						<TableRow style={{ background: "#E8DED1" }}>
 							<TableCell align="center">
-								<b>Town</b>
+								<b>Street</b>
 							</TableCell>
 							<TableCell align="center">
-								<b>Block</b>
+								<b>Project Name</b>
 							</TableCell>
 							<TableCell align="center">
-								<b>Room-Type</b>
+								<b>Proterty Type</b>
 							</TableCell>
 							<TableCell align="center">
-								<b>Size (sqm)</b>
+								<b>Status</b>
 							</TableCell>
 							<TableCell align="center">
 								<b>Actions</b>
@@ -204,4 +176,4 @@ function HDB() {
 	);
 }
 
-export default HDB;
+export default PMISQL;
