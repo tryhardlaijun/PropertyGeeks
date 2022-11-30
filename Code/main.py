@@ -282,6 +282,33 @@ def getPMIByFilter():
     finally:
         return json.dumps(output), response_code, {'ContentType': 'application/json'}
 
+@app.route('/pmi/filter/getPMIByID' , methods = ['GET'])
+def getPMIByID():
+    response_code = 400
+    output = {}
+    try:
+        if conn:
+            pmi_id = request.args.get('pmi_id') #PMI ID
+            query_statement = "SELECT PMI_ID,project,street,typeOfArea,tenure,PMIDetails.PType_ID,propertyType "\
+                              "FROM (PMIDetails " \
+                              "INNER JOIN PropertyType ON PMIDetails.PType_ID = PropertyType.PType_ID) " \
+                              f"WHERE PMI_ID = {pmi_id} "
+            query_statement += f"LIMIT {limit};"
+            print(query_statement)
+            cursor = conn.cursor()
+            cursor.execute(query_statement)
+            result = cursor.fetchall()
+            print(result)
+            rowDict ={"PMI_ID":result[0][0],"project":result[0][1],"street":result[0][2],"typeOfArea":result[0][3],
+                      "tenure":result[0][4], "PType_ID":result[0][5], "propertyType":result[0][6]}
+            output = {"Query":query_statement,"Count":1,"Results":rowDict}
+            response_code = 200
+    except Exception as e:
+        response_code = 400
+        output = {"result": 0, "message": "Unable to connect to database", "error": str(e)}
+    finally:
+        return json.dumps(output), response_code, {'ContentType': 'application/json'}
+
 @app.route('/pmi/filter/getPMIRental' , methods = ['GET'])
 def getPMIRental():
     response_code = 400
